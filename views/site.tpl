@@ -1,6 +1,7 @@
 <html>
 
 <body>
-Domain does not support domain connect.
+<h1>{{host}}</h1>
+{{messagetext}}
 </body>
 </html>

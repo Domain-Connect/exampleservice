@@ -126,13 +126,15 @@ def oauthresponse():
     urlAPI = request.query.get('urlAPI')
 
     # Take the oatuh code and get an access token
-    redirect_url = "http://" + host + "/oauthresponse?domain=" + domain + "&message=" + message + "&urlAPI=" + urlAPI
-    url = urlAPI + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _oauth_client_id + "&redirect_uri=" + urllib.quote(redirect_url) + "&client_secret=" + _oauth_client_secret
+    url = urlAPI + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _oauth_client_id + "&client_secret=" + _oauth_client_secret
+    #redirect_url = "http://" + host + "/oauthresponse?domain=" + domain + "&message=" + message + "&urlAPI=" + urlAPI
+    #"&redirect_uri=" + urllib.quote(redirect_url) 
+    
     r = requests.post(url, verify=False)
     access_token = r.json()['access_token']
 
     # Return a page. Normally you would store the access token and re-auth token and redirect the client browser
-    return template('async.tpl', {"access_token" : json_data['access_token'], "domain": domain, "message": message, "urlAPI" : urlAPI})
+    return template('async.tpl', {"access_token" : access_token, "domain": domain, "message": message, "urlAPI" : urlAPI})
 
 # Runs the application for all hosts
 def run_all():

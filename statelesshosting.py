@@ -7,10 +7,10 @@ import re
 
 # This is the IP address of the server I'm running this sample code. You can run the
 # sample on localhost, but you'll need to edit your host file
-_ip = '10.32.44.84'
+_ip = '132.148.25.185'
 
 # This is the name of the application where users configure their sites
-_hosting_website = 'statelesshosting.com'
+_hosting_website = 'exampleservice.domainconnect.org'
 
 # Domain Connect Provider and Service/Template
 #

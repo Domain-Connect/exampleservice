@@ -1,4 +1,4 @@
-from bottle import Bottle, run, route, template, request, response, abort, send_static
+from bottle import Bottle, run, route, template, request, response, abort, static_file
 from dns.resolver import dns
 import requests
 import json

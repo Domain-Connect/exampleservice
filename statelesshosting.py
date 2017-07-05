@@ -1,4 +1,4 @@
-from bottle import Bottle, run, route, template, request, response, abort
+from bottle import Bottle, run, route, template, request, response, abort, send_static
 from dns.resolver import dns
 import requests
 import json
@@ -235,4 +235,6 @@ def _is_valid_message(message):
         return False
     return re.match("^[a-zA-Z ,.?!0-9]*$", message) is not None
 
-#run_all()
+@route('/static/<filename>')
+def send_static(filename):
+    return static_file(filename, root='static')

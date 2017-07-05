@@ -1,5 +1,6 @@
 <html>
 <body>
+<img src="static/dclogo.png">
 <h1>Stateless Hosting</h1>
 
 <form method="post" action='/config'>

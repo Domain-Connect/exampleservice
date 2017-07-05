@@ -1,7 +1,12 @@
 <html>
+<head>
+<style>body {font-family: "Trebuchet MS", Helvetica, sans-serif;}</style>
+</head>
+
 <body>
 <img src="static/dclogo.png">
-<h1>Stateless Hosting</h1>
+<h1>Example Service Provider</h1>
+<h2>This website uses stateless hosting to demonstrate Domain Connect.</h2>
 
 <form method="post" action='/config'>
 <table>

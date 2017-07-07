@@ -79,7 +79,7 @@ def config():
     
     # See if our template is supported
     check_url = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template     
-    if !_check_template(check_url):
+    if not _check_template(check_url):
         return template('no_domain_connect.tpl')
     
     # Create the URL to oonfigure with domain connect synchronously
@@ -199,7 +199,7 @@ def _get_messagetext(domain):
     except:
         return None
 
-def _test_template(check_url):
+def _check_template(check_url):
     try:
         r = requests.get(url)
         if r.status_code == 200:

@@ -138,7 +138,7 @@ def oauthresponse():
         #"&redirect_uri=" + urllib.quote(redirect_url) 
         
         # Call the oauth provider and get the access token
-        r = requests.post(url)
+        r = requests.post(url, verify=False)
         
         json_response = r.json()
         access_token = json_response['access_token']
@@ -169,7 +169,7 @@ def ascynconfig():
     url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?domain=' + domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
 
     # Call the api with the oauth acces bearer token
-    r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token})
+    r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token}, verify=False)
     
     # If this fails, and there is a re-auth token, we could add this code here
 
@@ -201,7 +201,7 @@ def _get_messagetext(domain):
 
 def _check_template(check_url):
     try:
-        r = requests.get(url)
+        r = requests.get(url, verify=False)
         if r.status_code == 200:
            return True
         return False
@@ -221,7 +221,7 @@ def _get_domainconnect_json(domain):
 
         # Form the URL to get the json and fetch it
         url = 'https://' + host + '/v2/' + domain + '/settings'
-        r = requests.get(url)
+        r = requests.get(url, verify=False)
         return r.json()
 
     except:

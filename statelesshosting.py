@@ -20,6 +20,8 @@ _hosting_website = 'exampleservice.domainconnect.org'
 _provider = 'whdhackathon'
 _template = 'whd-template-1'
 
+app = application = Bottle()
+
 # oAuth Client Name, Scope, and Secret. This is all specific to GoDaddy
 oAuthConfig = {
     'GoDaddy' : {
@@ -30,8 +32,7 @@ oAuthConfig = {
 }
 
 _oauth_client_id = 'whdhackathon'
-_oauth_client_scope = 'whd-template-1'
-_oauth_client_secret = "DomainConnectGeheimnisSecretString"
+_oauth_client_scope = 'whd-template-1' _oauth_client_secret = "DomainConnectGeheimnisSecretString"
 
 # Handle the home page. This can be rendered for the service, or the individual sites
 @route('/')

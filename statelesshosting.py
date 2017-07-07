@@ -20,8 +20,6 @@ _hosting_website = 'exampleservice.domainconnect.org'
 _provider = 'whdhackathon'
 _template = 'whd-template-1'
 
-app = application = Bottle()
-
 # oAuth Client Name, Scope, and Secret. This is all specific to GoDaddy
 oAuthConfig = {
     'GoDaddy' : {
@@ -32,7 +30,8 @@ oAuthConfig = {
 }
 
 _oauth_client_id = 'whdhackathon'
-_oauth_client_scope = 'whd-template-1' _oauth_client_secret = "DomainConnectGeheimnisSecretString"
+_oauth_client_scope = 'whd-template-1'
+_oauth_client_secret = "DomainConnectGeheimnisSecretString"
 
 # Handle the home page. This can be rendered for the service, or the individual sites
 @route('/')
@@ -78,11 +77,9 @@ def config():
 
     dns_provider = json_data['providerName']
     
-    # See if our template is supported. Not yet implemented....
-    #check_url = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template 
-    
-    # Right now we are only onboarded with GoDaddy
-    if dns_provider != 'GoDaddy':
+    # See if our template is supported
+    check_url = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template     
+    if !_check_template(check_url):
         return template('no_domain_connect.tpl')
     
     # Create the URL to oonfigure with domain connect synchronously
@@ -141,7 +138,7 @@ def oauthresponse():
         #"&redirect_uri=" + urllib.quote(redirect_url) 
         
         # Call the oauth provider and get the access token
-        r = requests.post(url, verify=False)
+        r = requests.post(url)
         
         json_response = r.json()
         access_token = json_response['access_token']
@@ -172,7 +169,7 @@ def ascynconfig():
     url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?domain=' + domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
 
     # Call the api with the oauth acces bearer token
-    r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token}, verify=False)
+    r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token})
     
     # If this fails, and there is a re-auth token, we could add this code here
 
@@ -202,6 +199,15 @@ def _get_messagetext(domain):
     except:
         return None
 
+def _test_template(check_url):
+    try:
+        r = requests.get(url)
+        if r.status_code == 200:
+           return True
+        return False
+    except:
+        return False
+    
 def _get_domainconnect_json(domain):
 
     try:
@@ -215,7 +221,7 @@ def _get_domainconnect_json(domain):
 
         # Form the URL to get the json and fetch it
         url = 'https://' + host + '/v2/' + domain + '/settings'
-        r = requests.get(url, verify=False)
+        r = requests.get(url)
         return r.json()
 
     except:

@@ -9,6 +9,8 @@ Your domain uses {{providerName}}
 <p/>
 <a target=_new href='{{synchronousTargetUrl}}'>Configure Synchronously</a>
 <p/>
+<a target=_new href='{{synchronousSignedTargetUrl}}'>Configure Synchronously</a> (Verified = {{verified}})
+<p/>
 % if asynchronousTargetUrl != None:
     <a href='{{asynchronousTargetUrl}}'>Configure Asynchronously</a>
 % else:

@@ -1,4 +1,4 @@
-from bottle import Bottle, run, route, template, request, response, abort, static_file
+from bottle import Bottle, run, route, template, request, response, abort, static_file, default_app
 from dns.resolver import dns
 
 from Crypto.PublicKey import RSA
@@ -51,12 +51,13 @@ oAuthConfig = {
     }
 }
 
-app = application = Bottle()
+app = default_app()
 
 # Handle the home page. This can be rendered for the service, or the individual sites
 @route('/')
 def index():
 
+    print 'Hello'
     # Get the host name
     host = request.headers['Host']
 
@@ -209,10 +210,6 @@ def ascynconfig():
 
     return 'Done'
 
-# Runs the application for all hosts
-def run_all():
-    run(host='0.0.0.0', port=80, debug=True)
-
 # Gets the message text put into DNS for a domain name
 def _get_messagetext(domain):
     try:
@@ -304,3 +301,8 @@ def _is_valid_message(message):
 @route('/static/<filename>')
 def send_static(filename):
     return static_file(filename, root='static')
+
+# Runs the application for all hosts
+if __name__ == "__main__":
+    run(host='0.0.0.0', port=80, debug=True)
+

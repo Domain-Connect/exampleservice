@@ -53,6 +53,10 @@ oAuthConfig = {
 
 app = default_app()
 
+@route('/hello')
+def hello():
+    return "Hello World!"
+
 # Handle the home page. This can be rendered for the service, or the individual sites
 @route('/')
 def index():
@@ -114,7 +118,7 @@ def config():
     synchronousSignedTargetUrl = synchronousTargetUrl + '&sig=' + sig + '&key=_dck1'
 	
     # For fun, verify the signature 
-    verified = +verify_sig(pub_key, sig, qs)
+    verified = _verify_sig(pub_key, sig, qs)
 
     # Create the URL to configure domain connect asynchronously via oAuth
     asynchronousTargetUrl = None

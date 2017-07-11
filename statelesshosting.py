@@ -33,6 +33,8 @@ _oauth_client_id = 'whdhackathon'
 _oauth_client_scope = 'whd-template-1'
 _oauth_client_secret = "DomainConnectGeheimnisSecretString"
 
+app = application = Bottle()
+
 # Handle the home page. This can be rendered for the service, or the individual sites
 @route('/')
 def index():
@@ -201,7 +203,9 @@ def _get_messagetext(domain):
 
 def _check_template(check_url):
     try:
-        r = requests.get(url)
+        print url
+        r = requests.get(url, verify=False)
+        print r.status_code
         if r.status_code == 200:
            return True
         return False
@@ -221,7 +225,7 @@ def _get_domainconnect_json(domain):
 
         # Form the URL to get the json and fetch it
         url = 'https://' + host + '/v2/' + domain + '/settings'
-        r = requests.get(url)
+        r = requests.get(url, verify=False)
         return r.json()
 
     except:

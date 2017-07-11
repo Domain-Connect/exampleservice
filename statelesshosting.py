@@ -51,6 +51,8 @@ oAuthConfig = {
     }
 }
 
+app = application = Bottle()
+
 # Handle the home page. This can be rendered for the service, or the individual sites
 @route('/')
 def index():
@@ -234,7 +236,7 @@ def _get_messagetext(domain):
 # Checks if the DNS Provider supports our template
 def _check_template(url):
     try:
-        r = requests.get(url, verify=True)
+        r = requests.get(url, verify=False)
         if r.status_code == 200:
            return True
         return False
@@ -255,7 +257,7 @@ def _get_domainconnect_json(domain):
 
         # Form the URL to get the json and fetch it
         url = 'https://' + host + '/v2/' + domain + '/settings'
-        r = requests.get(url, verify=True)
+        r = requests.get(url, verify=False)
         return r.json()
 
     except:

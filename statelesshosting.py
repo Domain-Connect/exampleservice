@@ -1,5 +1,11 @@
 from bottle import Bottle, run, route, template, request, response, abort, static_file
 from dns.resolver import dns
+
+from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA256
+from base64 import b64decode, b64encode,urlsafe_b64decode,b16encode
+
 import requests
 import json
 import urllib
@@ -11,6 +17,18 @@ _ip = '132.148.25.185'
 
 # This is the name of the application where users configure their sites
 _hosting_website = 'exampleservice.domainconnect.org'
+
+pub_key = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA18SgvpmeasN4BHkkv0SB\njAzIc4grYLjiAXRtNiBUiGUDMeTzQrKTsWvy9NuxU1dIHCZy9o1CrKNg5EzLIZLN\nyMfI6qiXnM+HMd4byp97zs/3D39Q8iR5poubQcRaGozWx8yQpG0OcVdmEVcTfyR/\\
+nXSEWC5u16EBNvRnNAOAvZYUdWqVyQvXsjnxQot8KcK0QP8iHpoL/1dbdRy2opRPQ\n2FdZpovUgknybq/6FkeDtW7uCQ6Mvu4QxcUa3+WP9nYHKtgWip/eFxpeb+qLvcLH\nf1h0JXtxLVdyy6OLk3f2JRYUX2ZZVDvG3biTpeJz6iRzjGg6MfGxXZHjI8weDjXr\nJwIDAQAB\n-----END PUBLIC KEY-----'
+
+priv_key = '-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA18SgvpmeasN4BHkkv0SBjAzIc4grYLjiAXRtNiBUiGUDMeTz\nQrKTsWvy9NuxU1dIHCZy9o1CrKNg5EzLIZLNyMfI6qiXnM+HMd4byp97zs/3D39Q\n8iR5poubQcRaGozWx8yQpG0OcVdmEVcTfyR/XSEWC5u16EBNvRnNAOAvZYU\
+dWqVy\nQvXsjnxQot8KcK0QP8iHpoL/1dbdRy2opRPQ2FdZpovUgknybq/6FkeDtW7uCQ6M\nvu4QxcUa3+WP9nYHKtgWip/eFxpeb+qLvcLHf1h0JXtxLVdyy6OLk3f2JRYUX2ZZ\nVDvG3biTpeJz6iRzjGg6MfGxXZHjI8weDjXrJwIDAQABAoIBAGiPedJDwXg9d1i7\nmCo0OY8z1qPeFh9OGP/Zet8i9bQPN2g\
+jahslTNtK07cDC8C2aFRz8Xw3Ylsk5Vxd\nNobzjFPDNUM6JhawnvR0jQU5GhdTwoc5DHH7aRRjTP6m938sRx0VrfZwfvJAB09Z\n4jHX7vyjfvprH9EH8GQ2L5lACtfnsSASVJB77H1vtgxTnum74CSqIck1MCjPD/TV\nUtYfMJwkUQWcbk79N4nvnEoagqsDrvw4okU2OYMWucQjyxfWTU4NGlsDScRbdDAb\n8sL\
+r3DpMfXM8vpZJ3Ed6gfw14hEJym8XoHwDHmjGmgYH9iG6MODxuO5TLRmRR6b+\njcUV/2kCgYEA4WGsDUO/NIXIqtDm5lTi5qeFl0sGKIgRLGuCrvjLF0Fq5Yx28wuo\nw3OhZ3rbjlmhf9nUt24nUUY67plv2pi+vx3kVdbcNfk+Wkc0wfx8+U91qaTplMRh\nNjrnq/Kp9E7xtnzZRInpUG1Ha5ozTYobVvklUvjod\
+FlF2c16Zz2X2AMCgYEA9RSe\nZm7oMyJbe985SScXruwt5ZXlUBoBLDZAeMloPpaqknFmSVSNgtniywztF8HppJQy\niMvmUOUL2tKnuShXwsvTkCTBC/vNGXutiPS8O2yqeQ8dHoHuKcoMFwgajrbPrVku\nFtUkjbQJ/TKoZtrxUdCryDZ/AHmRtiHh9E4NUQ0CgYAE7ngvSh4y7gJ4Cl4jCBR2\n6492wgN+e4u0p\
+x2S6oq3FY1bPHmV09l7fVo4w21ubfOksoV/BgACPUEo216hL9ps\noCDQ6ASlgbCllQ1IeVfatKxka+FYift+jkdnccXaPKf5UD4Iy+O5CMsZRaR9u9nh\nS05PxHaBpTpsC5z0CVr7NQKBgQCsBTzpSQ9SVNtBpvzei8Hj1YKhkwTRpG8OSUYX\ngcbZp4cyIsZY0jBBmA3H19rSwhjsm9icjAGs5hfcD+AJ5nczEz3\
+7/tBBSQw8xsKX\nTrCQRUWikyktMKWqT1cNE3MQmOBMHDxtak2t6KDaR6RMDYE0m/L3JMkf3DSaUk32\n3JIcQQKBgD6lHhw79Cenpezzf0566uWE1QF6Sv3kWk6Gkzo2jUGmjo2tG1v2Nj82\nDvcTuqvfUKSr2wTKINxnKGyYXGto0BykdxeFbR04cNcBB46zUjasro2ZCvIoAHCp\nohNBI2dL6dI+RI3jC/KY3jP\
+NI0toaOTWkeAvJ7w09G2ttlv8qLNV\n-----END RSA PRIVATE KEY-----'
 
 # Domain Connect Provider and Service/Template
 #
@@ -83,12 +101,21 @@ def config():
     check_url = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template     
     if not _check_template(check_url):
         return template('no_domain_connect.tpl')
+		
+	# Get the query string for configuration synchronously
+	qs = 'domain=' + domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
     
     # Create the URL to oonfigure with domain connect synchronously
-    synchronousTargetUrl = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?domain=' + domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
+    synchronousTargetUrl = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?' + qs
+	
+	# Create the URL to configure with domain connect synchronously with signature verification
+	sig = generate_sig(priv_key, qs)
+	synchronousSignedTargetUrl = synchronousTargetUrl + '&sig=' + signature
+	
+	# For fun, verify the signature 
+	verified = verify_sig(pub_key, sig, qs)
 
     # Create the URL to configure domain connect asynchronously via oAuth
-    
     asynchronousTargetUrl = None
     
     if oAuthConfig.has_key(dns_provider):
@@ -103,7 +130,12 @@ def config():
             "&redirect_uri=" + urllib.quote(redirect_url)
 
     # Render the confirmation page
-    return template('confirm.tpl', {'providerName' : json_data['providerName'], 'synchronousTargetUrl' : synchronousTargetUrl, 'asynchronousTargetUrl' : asynchronousTargetUrl})
+    return template('confirm.tpl', 
+		{'providerName' : json_data['providerName'], 
+		'synchronousTargetUrl' : synchronousTargetUrl, 
+		'synchronousSignedTargetUrl' : synchronousSignedTargetUrl,
+		'verified': verified,
+		'asynchronousTargetUrl' : asynchronousTargetUrl})
     
 # Handle the redirect back from the oAuth call
 #
@@ -140,7 +172,7 @@ def oauthresponse():
         #"&redirect_uri=" + urllib.quote(redirect_url) 
         
         # Call the oauth provider and get the access token
-        r = requests.post(url)
+        r = requests.post(url, verify=True)
         
         json_response = r.json()
         access_token = json_response['access_token']
@@ -171,7 +203,7 @@ def ascynconfig():
     url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?domain=' + domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
 
     # Call the api with the oauth acces bearer token
-    r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token})
+    r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token}, verify=True)
     
     # If this fails, and there is a re-auth token, we could add this code here
 
@@ -201,11 +233,9 @@ def _get_messagetext(domain):
     except:
         return None
 
-def _check_template(check_url):
+def _check_template(url):
     try:
-        print url
         r = requests.get(url, verify=False)
-        print r.status_code
         if r.status_code == 200:
            return True
         return False
@@ -230,6 +260,27 @@ def _get_domainconnect_json(domain):
 
     except:
         return None
+		
+def generate_sig(private_key, data):
+
+    rsakey = RSA.importKey(private_key)
+    signer = PKCS1_v1_5.new(rsakey)
+    digest = SHA256.new()
+    digest.update(data)
+
+    return b64encode(signer.sign(digest))
+
+def verify_sig(public_key, signature, data):
+
+    rsakey = RSA.importKey(public_key)
+    signer = PKCS1_v1_5.new(rsakey)
+    digest = SHA256.new()
+    digest.update(data)
+
+    if signer.verify(digest, b64decode(signature)):
+        return True
+
+    return False
 
 # Valid host names pass simple domain name validation
 def _is_valid_hostname(hostname):

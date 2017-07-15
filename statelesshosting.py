@@ -15,7 +15,7 @@ import calendar
 
 # This is the IP address of the server I'm running this sample code. You can run the
 # sample on localhost, but you'll need to edit your host file
-_ip = '127.0.0.1' # TODO: Replace localhost with 132.148.25.185 is the server IP
+_ip = '132.148.25.185'
 
 # This is the name of the application where users configure their sites
 _hosting_website = 'exampleservice.domainconnect.org'
@@ -116,7 +116,7 @@ def config():
     synchronousSignedTargetUrl = synchronousTargetUrl + '&sig=' + sig + '&key=_dck1'
 	
     # For fun, verify the signature 
-    verified = _verify_sig(pub_key, sig, qs) # TODO: Replace pub_key with _get_publickey('_dck1.' + host)
+    verified = _verify_sig(_get_publickey, sig, qs) # TODO: Replace pub_key with _get_publickey('_dck1.' + host)
 
     # Create the URL to configure domain connect asynchronously via oAuth
     asynchronousTargetUrl = None

@@ -5,6 +5,6 @@
 
 <body>
 <h1>{{host}}</h1>
-{{messagetext}}
+{{!messagetext}}
 </body>
 </html>

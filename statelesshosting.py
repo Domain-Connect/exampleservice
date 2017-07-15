@@ -10,10 +10,12 @@ import requests
 import json
 import urllib
 import re
+import time
+import calendar
 
 # This is the IP address of the server I'm running this sample code. You can run the
 # sample on localhost, but you'll need to edit your host file
-_ip = '132.148.25.185'
+_ip = '127.0.0.1' # TODO: Replace localhost with 132.148.25.185 is the server IP
 
 # This is the name of the application where users configure their sites
 _hosting_website = 'exampleservice.domainconnect.org'
@@ -100,9 +102,11 @@ def config():
     check_url = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template     
     if not _check_template(check_url):
         return template('no_domain_connect.tpl')
+
+    secs = calendar.timegm(time.gmtime()) # Seconds since the epoch
 		
     # Get the query string for configuration synchronously
-    qs = 'domain=' + domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
+    qs = 'domain=' + domain + '&RANDOMTEXT=shm:' + str(secs) + ':' +  message + '&IP=' + _ip
     
     # Create the URL to oonfigure with domain connect synchronously
     synchronousTargetUrl = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?' + qs
@@ -112,7 +116,7 @@ def config():
     synchronousSignedTargetUrl = synchronousTargetUrl + '&sig=' + sig + '&key=_dck1'
 	
     # For fun, verify the signature 
-    verified = _verify_sig(_get_publickey('_dck1.' + host), sig, qs)
+    verified = _verify_sig(pub_key, sig, qs) # TODO: Replace pub_key with _get_publickey('_dck1.' + host)
 
     # Create the URL to configure domain connect asynchronously via oAuth
     asynchronousTargetUrl = None
@@ -198,8 +202,10 @@ def ascynconfig():
     if domain == None or domain == '' or not _is_valid_hostname(domain) or message == None or message == '' or not _is_valid_message(message) or access_token == None or access_token == '' or urlAPI == None or urlAPI == '':
         return template('invalid_data.tpl')
 
+    secs = calendar.timegm(time.gmtime()) # Seconds since the epoch
+
     # This is the URL to call the api to apply the template
-    url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?domain=' + domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
+    url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?domain=' + domain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
 
     # Call the api with the oauth acces bearer token
     r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token}, verify=True)
@@ -210,23 +216,30 @@ def ascynconfig():
 
 # Gets the message text put into DNS for a domain name
 def _get_messagetext(domain):
-    try:
-        messagetext = None
+    #try:
+        messagetext = ''
 
         # Get the txt record for domain connect
         answers = dns.resolver.query(domain, 'TXT')
-        for i in range(len(answers)):
-            answer = answers[i].strings[0]
+        timestamps = {}
+        for answer in answers:
+            data = answer.strings[0].split(':') # List containing ['shm', 'date', 'text']
             
-            if answer.startswith('shm:'):
-                if messagetext == None:
-                    messagetext = ''
-                messagetext = messagetext + ' ' + answer[4:]
+            if data[0] == 'shm':
+                if len(data) == 2:
+                    data.insert(1, 0) # Resolves legacy issues wherein a user added an shm TXT record prior to timestamp support
+                
+                timestamps[data[1]] = data[2] # Add the date (seconds since epoch) and string to a Dictionary
+
+        # Iterate through every timestamp, sorted
+        sorted_dates = sorted(list(timestamps.keys()))
+        for date in sorted_dates:
+            messagetext += timestamps[date] + '<br>'
 
         return messagetext
 
-    except:
-        return None
+    #except:
+    #    return None
 
 # Get TXT records and parse them for the public key
 # At the moment, the TXT records with the key don't have \n characters in them. This needs to be fixed.

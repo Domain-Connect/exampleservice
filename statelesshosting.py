@@ -116,7 +116,7 @@ def config():
     synchronousSignedTargetUrl = synchronousTargetUrl + '&sig=' + sig + '&key=_dck1'
 	
     # For fun, verify the signature 
-    verified = _verify_sig(_get_publickey, sig, qs) # TODO: Replace pub_key with _get_publickey('_dck1.' + host)
+    verified = _verify_sig(_get_publickey('_dck1.' + host), sig, qs)
 
     # Create the URL to configure domain connect asynchronously via oAuth
     asynchronousTargetUrl = None

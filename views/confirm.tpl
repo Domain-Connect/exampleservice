@@ -1,9 +1,4 @@
-<html>
-<head>
-<style>body {font-family: "Trebuchet MS", Helvetica, sans-serif;}</style>
-</head>
-
-<body>
+% include('header.tpl', title='Configure Domain Connect')
 <h1>Provider Found</h1>
 Your domain uses {{providerName}}
 <p/>
@@ -16,5 +11,4 @@ Your domain uses {{providerName}}
 % else:
     Async not supported by provider
 % end
-</body>
-</html>
+% include('footer.tpl')

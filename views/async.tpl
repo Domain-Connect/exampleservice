@@ -1,9 +1,4 @@
-<html>
-<head>
-<style>body {font-family: "Trebuchet MS", Helvetica, sans-serif;}</style>
-
-
-<body>
+% include('header.tpl', title='Asynchronous Configuration')
 <h1>Access Granted</h1>
 Access has been granted. Normally the server would later provision the template onto the domain.
 <p/>
@@ -19,5 +14,4 @@ Here we simply emulate this asynchronous provisioning by allowing the template t
 <tr><td>&nbsp;</td><td><input type="submit"/></td>
 </table>
 </form>
-</body>
-</html>
+% include('footer.tpl')

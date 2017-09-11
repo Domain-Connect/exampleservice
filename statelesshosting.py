@@ -11,44 +11,42 @@ import json
 import urllib
 import re
 
-# This is the IP address of the server I'm running this sample code. You can run the
+# This is the IP address of the server running this code. You can run the
 # sample on localhost, but you'll need to edit your host file
 _ip = '132.148.25.185'
 
-# This is the name of the application where users configure their sites
+# This is the host name of our application
 _hosting_website = 'exampleservice.domainconnect.org'
-
-# This is the public key for verifying signature requests.  Normally this would be fetched by the DNS Provider to 
-# verify the incoming signature.  We have it in here simply to demonstrate how this is done
-#
-# DNS would contain multiple TXT redords hosted at _dck1.exampleservice.domainconnect.org with values:
-#
-#    p=1,a=RS256,d=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA18SgvpmeasN4BHkkv0SBjAzIc4grYLjiAXRtNiBUiGUDMeTzQrKTsWvy9NuxU1dIHCZy9o1CrKNg5EzLIZLNyMfI6qiXnM+HMd4byp97zs/3D39Q8iR5poubQcRaGozWx8yQpG0OcVdmEVcTfy
-#    p=2,a=RS256,d=R/XSEWC5u16EBNvRnNAOAvZYUdWqVyQvXsjnxQot8KcK0QP8iHpoL/1dbdRy2opRPQ2FdZpovUgknybq/6FkeDtW7uCQ6Mvu4QxcUa3+WP9nYHKtgWip/eFxpeb+qLvcLHf1h0JXtxLVdyy6OLk3f2JRYUX2ZZVDvG3biTpeJz6iRzjGg6MfGxXZHjI8
-#    p=3,a=RS256,d=weDjXrJwIDAQAB
-#
-pub_key = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA18SgvpmeasN4BHkkv0SBjAzIc4grYLjiAXRtNiBUiGUDMeTzQrKTsWvy9NuxU1dIHCZy9o1CrKNg5EzLIZLNyMfI6qiXnM+HMd4byp97zs/3D39Q8iR5poubQcRaGozWx8yQpG0OcVdmEVcTfyR/XSEWC5u16EBNvRnNAOAvZYUdWqVyQvXsjnxQot8KcK0QP8iHpoL/1dbdRy2opRPQ2FdZpovUgknybq/6FkeDtW7uCQ6Mvu4QxcUa3+WP9nYHKtgWip/eFxpeb+qLvcLHf1h0JXtxLVdyy6OLk3f2JRYUX2ZZVDvG3biTpeJz6iRzjGg6MfGxXZHjI8weDjXrJwIDAQAB\n-----END PUBLIC KEY-----'
 
 # This is the private key used to generate signatures.
 #
 #  Normally a private key isn't put into code.  But this is a simple sample application.
 priv_key = '-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA18SgvpmeasN4BHkkv0SBjAzIc4grYLjiAXRtNiBUiGUDMeTzQrKTsWvy9NuxU1dIHCZy9o1CrKNg5EzLIZLNyMfI6qiXnM+HMd4byp97zs/3D39Q8iR5poubQcRaGozWx8yQpG0OcVdmEVcTfyR/XSEWC5u16EBNvRnNAOAvZYUdWqVyQvXsjnxQot8KcK0QP8iHpoL/1dbdRy2opRPQ2FdZpovUgknybq/6FkeDtW7uCQ6Mvu4QxcUa3+WP9nYHKtgWip/eFxpeb+qLvcLHf1h0JXtxLVdyy6OLk3f2JRYUX2ZZVDvG3biTpeJz6iRzjGg6MfGxXZHjI8weDjXrJwIDAQABAoIBAGiPedJDwXg9d1i7mCo0OY8z1qPeFh9OGP/Zet8i9bQPN2gjahslTNtK07cDC8C2aFRz8Xw3Ylsk5VxdNobzjFPDNUM6JhawnvR0jQU5GhdTwoc5DHH7aRRjTP6m938sRx0VrfZwfvJAB09Z4jHX7vyjfvprH9EH8GQ2L5lACtfnsSASVJB77H1vtgxTnum74CSqIck1MCjPD/TVUtYfMJwkUQWcbk79N4nvnEoagqsDrvw4okU2OYMWucQjyxfWTU4NGlsDScRbdDAb8sLr3DpMfXM8vpZJ3Ed6gfw14hEJym8XoHwDHmjGmgYH9iG6MODxuO5TLRmRR6b+jcUV/2kCgYEA4WGsDUO/NIXIqtDm5lTi5qeFl0sGKIgRLGuCrvjLF0Fq5Yx28wuow3OhZ3rbjlmhf9nUt24nUUY67plv2pi+vx3kVdbcNfk+Wkc0wfx8+U91qaTplMRhNjrnq/Kp9E7xtnzZRInpUG1Ha5ozTYobVvklUvjodFlF2c16Zz2X2AMCgYEA9RSeZm7oMyJbe985SScXruwt5ZXlUBoBLDZAeMloPpaqknFmSVSNgtniywztF8HppJQyiMvmUOUL2tKnuShXwsvTkCTBC/vNGXutiPS8O2yqeQ8dHoHuKcoMFwgajrbPrVkuFtUkjbQJ/TKoZtrxUdCryDZ/AHmRtiHh9E4NUQ0CgYAE7ngvSh4y7gJ4Cl4jCBR26492wgN+e4u0px2S6oq3FY1bPHmV09l7fVo4w21ubfOksoV/BgACPUEo216hL9psoCDQ6ASlgbCllQ1IeVfatKxka+FYift+jkdnccXaPKf5UD4Iy+O5CMsZRaR9u9nhS05PxHaBpTpsC5z0CVr7NQKBgQCsBTzpSQ9SVNtBpvzei8Hj1YKhkwTRpG8OSUYXgcbZp4cyIsZY0jBBmA3H19rSwhjsm9icjAGs5hfcD+AJ5nczEz37/tBBSQw8xsKXTrCQRUWikyktMKWqT1cNE3MQmOBMHDxtak2t6KDaR6RMDYE0m/L3JMkf3DSaUk323JIcQQKBgD6lHhw79Cenpezzf0566uWE1QF6Sv3kWk6Gkzo2jUGmjo2tG1v2Nj82DvcTuqvfUKSr2wTKINxnKGyYXGto0BykdxeFbR04cNcBB46zUjasro2ZCvIoAHCpohNBI2dL6dI+RI3jC/KY3jPNI0toaOTWkeAvJ7w09G2ttlv8qLNV\n-----END RSA PRIVATE KEY-----'
 
+# The corresponding public key is:
+#
+#pub_key = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA18SgvpmeasN4BHkkv0SBjAzIc4grYLjiAXRtNiBUiGUDMeTzQrKTsWvy9NuxU1dIHCZy9o1CrKNg5EzLIZLNyMfI6qiXnM+HMd4byp97zs/3D39Q8iR5poubQcRaGozWx8yQpG0OcVdmEVcTfyR/XSEWC5u16EBNvRnNAOAvZYUdWqVyQvXsjnxQot8KcK0QP8iHpoL/1dbdRy2opRPQ2FdZpovUgknybq/6FkeDtW7uCQ6Mvu4QxcUa3+WP9nYHKtgWip/eFxpeb+qLvcLHf1h0JXtxLVdyy6OLk3f2JRYUX2ZZVDvG3biTpeJz6iRzjGg6MfGxXZHjI8weDjXrJwIDAQAB\n-----END PUBLIC KEY-----'
+##
+# This is in DNS for _dck1.exampleservice.domainconnect.org contains TXT records of the form:
+#
+#    p=1,a=RS256,d=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA18SgvpmeasN4BHkkv0SBjAzIc4grYLjiAXRtNiBUiGUDMeTzQrKTsWvy9NuxU1dIHCZy9o1CrKNg5EzLIZLNyMfI6qiXnM+HMd4byp97zs/3D39Q8iR5poubQcRaGozWx8yQpG0OcVdmEVcTfy
+#    p=2,a=RS256,d=R/XSEWC5u16EBNvRnNAOAvZYUdWqVyQvXsjnxQot8KcK0QP8iHpoL/1dbdRy2opRPQ2FdZpovUgknybq/6FkeDtW7uCQ6Mvu4QxcUa3+WP9nYHKtgWip/eFxpeb+qLvcLHf1h0JXtxLVdyy6OLk3f2JRYUX2ZZVDvG3biTpeJz6iRzjGg6MfGxXZHjI8
+#    p=3,a=RS256,d=weDjXrJwIDAQAB
+#
+
 # Domain Connect Provider and Service/Template
 #
-# This template takes two variables. The IP address for the A Record (IP=), and string put into a TXT record (RANDOMTEXT=)
+# These templates takes two variables. The IP address for the A Record (IP=), and string put into a TXT record (RANDOMTEXT=). These are usedn
+# to set an A record and a TXT record into the zone. They were originally created as part of a hackathon and as such have this odd name
 #
-# The template sets an A record and a TXT record into the zone. It was created as part of a hackathon and as such has this name
+# The 2nd variant adds a CNAME with the host value of WHD
 _provider = 'whdhackathon'
-_template = 'whd-template-1'
+_template1 = 'whd-template-1'
+_template2 = 'whd-template-2'
 
-# oAuth Client Name, Scope, and Secret.  For GoDaddy the client id and scope happen to be the same as the provider and template. This isn't required.
-oAuthConfig = {
-    'GoDaddy' : {
-        'client_id' : 'whdhackathon',
-        'client_scope' : 'whd-template-1',
-        'client_secret' : 'DomainConnectGeheimnisSecretString'
-    }
+# Secrets per provider that support oAuth
+oAuthSecrets = {
+    'GoDaddy' : 'DomainConnectGeheimnisSecretString'
 }
 
 app = default_app()
@@ -85,6 +83,7 @@ def config():
 
     # Get the domain/message and validate
     domain = request.forms.get('domain')
+    subdomain = request.forms.get('subdomain')
     message = request.forms.get('message')
     if domain == None or domain == '' or not _is_valid_hostname(domain) or message == None or message == '' or not _is_valid_message(message):
         return template('invalid_data.tpl')
@@ -94,45 +93,56 @@ def config():
     if json_data == None:
         return template('no_domain_connect.tpl')
 
+    # Get the provider name
     dns_provider = json_data['providerName']
     
-    # See if our template is supported
-    check_url = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template     
-    if not _check_template(check_url):
+    # See if our templates are supported
+    check_url1 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1
+    check_url2 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2
+    if not _check_template(check_url1) or not _check_template(check_url2):
         return template('no_domain_connect.tpl')
 		
-    # Get the query string for configuration synchronously
+    # Get the query string for synchronous calls
     qs = 'domain=' + domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
-    
-    # Create the URL to oonfigure with domain connect synchronously
-    synchronousTargetUrl = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?' + qs
+    if subdomain != '' and subdomain != None:
+        qs = qs + '&host=' + subdomain
+
+    # Create the URL to oonfigure with domain connect synchronously (both variants)
+    synchronousTargetUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?' + qs
+    synchronousTargetUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qs
 	
-    # Create the URL to configure with domain connect synchronously with signature verification
+    # Create the URL to configure with domain connect synchronously with signature  (both variants)
     sig = _generate_sig(priv_key, qs)
-    synchronousSignedTargetUrl = synchronousTargetUrl + '&sig=' + sig + '&key=_dck1'
+    synchronousSignedTargetUrl1 = synchronousTargetUrl1 + '&sig=' + sig + '&key=_dck1'
+    synchronousSignedTargetUrl2 = synchronousTargetUrl2 + '&sig=' + sig + '&key=_dck1'
 	
     # For fun, verify the signature 
-    verified = _verify_sig(_get_publickey('_dck1.' + host), sig, qs)
+    pub_key = _get_publickey('_dck1.' + host)
+    verified = _verify_sig(pub_key, sig, qs)
 
     # Create the URL to configure domain connect asynchronously via oAuth
     asynchronousTargetUrl = None
     
-    if oAuthConfig.has_key(dns_provider):
+    if oAuthSecrets.has_key(dns_provider):
     
         # The redirect_url is part of oAuth and where the user will be sent after consent. Appended to this URL will be
         # the OAuth code
-        redirect_url = "http://" + host + "/oauthresponse?domain=" + domain + "&message=" + message + "&urlAPI=" + json_data['urlAPI'] + "&dns_provider=" + dns_provider
-        asynchronousTargetUrl = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '?' + \
+        redirect_url = "http://" + host + "/oauthresponse?domain=" + domain + "&subdomain=" + subdomain + "&message=" + message + "&urlAPI=" + json_data['urlAPI'] + "&dns_provider=" + dns_provider
+
+        # Right now the call to get a permission requires the template in the path. Doesn't matter which one.  Spec is updating to eliminate this
+        asynchronousTargetUrl = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '?' + \
             'domain=' + domain + \
-            "&client_id=" + oAuthConfig[dns_provider]['client_id'] + \
-            "&scope=" + oAuthConfig[dns_provider]['client_scope'] + \
+            "&client_id=" + _provider + \
+            "&scope=" + _template1 + ' ' + _template2 + \
             "&redirect_uri=" + urllib.quote(redirect_url)
 
     # Render the confirmation page
     return template('confirm.tpl', 
 		{'providerName' : json_data['providerName'], 
-		'synchronousTargetUrl' : synchronousTargetUrl, 
-		'synchronousSignedTargetUrl' : synchronousSignedTargetUrl,
+		'synchronousTargetUrl1' : synchronousTargetUrl1, 
+		'synchronousTargetUrl2' : synchronousTargetUrl2, 
+		'synchronousSignedTargetUrl1' : synchronousSignedTargetUrl1,
+		'synchronousSignedTargetUrl2' : synchronousSignedTargetUrl2,
 		'verified': verified,
 		'asynchronousTargetUrl' : asynchronousTargetUrl})
     
@@ -154,6 +164,7 @@ def oauthresponse():
     # Get the data from the URL
     code = request.query.get("code")
     domain = request.query.get("domain")
+    subdomain = request.query.get("subdomain")
     message = request.query.get("message")
     urlAPI = request.query.get('urlAPI')
     dns_provider = request.query.get('dns_provider')
@@ -164,7 +175,7 @@ def oauthresponse():
     
     else:
         # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
-        url = urlAPI + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + oAuthConfig[dns_provider]['client_id'] + "&client_secret=" + oAuthConfig[dns_provider]['client_secret']
+        url = urlAPI + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + oAuthSecrets[dns_provider]
         
         # Some oauth implmentations ask for the original redirect url when getting the access token
         #redirect_url = "http://" + host + "/oauthresponse?domain=" + domain + "&message=" + message + "&urlAPI=" + urlAPI
@@ -176,8 +187,20 @@ def oauthresponse():
         json_response = r.json()
         access_token = json_response['access_token']
 
-        # Return a page. Normally you would store the access token and re-auth token and redirect the client browser
-        return template('async.tpl', {"access_token" : access_token, "code": code, "json_response": json_response, "domain": domain, "message": message, "urlAPI" : urlAPI})
+        # Return a page. Normally you would store the access and re-auth tokens and redirect the client browser
+        d = {
+             "applied": 0,
+
+             "json_response": json_response, 
+             "code": code, 
+             "access_token" : access_token, 
+
+             "domain": domain, 
+             "subdomain" : subdomain, 
+             "message": message, 
+             "urlAPI" : urlAPI
+            }
+        return template('async.tpl', d)
 
 # Handle the form post for the processing the asynchronous setting using an oAuth access token. 
 @route("/asyncconfig", method='POST')
@@ -190,6 +213,7 @@ def ascynconfig():
 
     # Get the domain name, message, acccess token
     domain = request.forms.get('domain')
+    subdomain = request.forms.get('subdomain')
     message = request.forms.get('message')
     access_token = request.forms.get('access_token')
     urlAPI = request.forms.get('urlAPI')
@@ -198,15 +222,29 @@ def ascynconfig():
     if domain == None or domain == '' or not _is_valid_hostname(domain) or message == None or message == '' or not _is_valid_message(message) or access_token == None or access_token == '' or urlAPI == None or urlAPI == '':
         return template('invalid_data.tpl')
 
+    applied_to_domain = domain
+    if subdomain != '' and subdomain != None:
+        applied_to_domain = subdomain + '.' + domain
+
     # This is the URL to call the api to apply the template
-    url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?domain=' + domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
+    if 'template2' in request.forms.keys():
+        url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?domain=' + applied_to_domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
+    else:
+        url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?domain=' + applied_to_domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
 
     # Call the api with the oauth acces bearer token
     r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token}, verify=True)
     
     # If this fails, and there is a re-auth token, we could add this code here
 
-    return 'Done'
+    # Return a page. Normally you would store the access and re-auth tokens and redirect the client browser
+    d = {"applied" : 1,
+         "access_token" : access_token, 
+         "domain": domain, 
+         "subdomain" : subdomain, 
+         "message": message, 
+         "urlAPI" : urlAPI}
+    return template('async.tpl', d)
 
 # Gets the message text put into DNS for a domain name
 def _get_messagetext(domain):
@@ -229,7 +267,6 @@ def _get_messagetext(domain):
         return None
 
 # Get TXT records and parse them for the public key
-# At the moment, the TXT records with the key don't have \n characters in them. This needs to be fixed.
 def _get_publickey(domain):
     try:
         keysegments = []

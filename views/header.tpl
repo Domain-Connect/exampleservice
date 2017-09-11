@@ -1,5 +1,5 @@
 <html>
-<<<<<<< HEAD
+
 <head>
 <title>Domain Connect Example</title>
 <style>body {font-family: "Trebuchet MS", Helvetica, sans-serif;}</style>
@@ -18,10 +18,3 @@
 
 <body>
 <a href="/domainconnect.org"><img src="static/dclogo.png"></a>
-=======
-    <head>
-        <style>body {font-family: "Trebuchet MS", Helvetica, sans-serif;}</style>
-        <title>{{title}}</title>
-    </head>
-<body>
->>>>>>> 639496c4148b234d90b8b9fa3dd2378639f5b483

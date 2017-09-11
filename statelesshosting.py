@@ -106,22 +106,14 @@ def config():
 
     secs = calendar.timegm(time.gmtime()) # Seconds since the epoch
 		
-<<<<<<< HEAD
     # Get the query string for synchronous calls
-    qs = 'domain=' + domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
+    qs = 'domain=' + domain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
     if subdomain != '' and subdomain != None:
         qs = qs + '&host=' + subdomain
 
     # Create the URL to oonfigure with domain connect synchronously (both variants)
     synchronousTargetUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?' + qs
     synchronousTargetUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qs
-=======
-    # Get the query string for configuration synchronously
-    qs = 'domain=' + domain + '&RANDOMTEXT=shm:' + str(secs) + ':' +  message + '&IP=' + _ip
-    
-    # Create the URL to oonfigure with domain connect synchronously
-    synchronousTargetUrl = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?' + qs
->>>>>>> 639496c4148b234d90b8b9fa3dd2378639f5b483
 	
     # Create the URL to configure with domain connect synchronously with signature  (both variants)
     sig = _generate_sig(priv_key, qs)
@@ -234,22 +226,17 @@ def ascynconfig():
     if domain == None or domain == '' or not _is_valid_hostname(domain) or message == None or message == '' or not _is_valid_message(message) or access_token == None or access_token == '' or urlAPI == None or urlAPI == '':
         return template('invalid_data.tpl')
 
-<<<<<<< HEAD
     applied_to_domain = domain
     if subdomain != '' and subdomain != None:
         applied_to_domain = subdomain + '.' + domain
 
-    # This is the URL to call the api to apply the template
-    if 'template2' in request.forms.keys():
-        url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?domain=' + applied_to_domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
-    else:
-        url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?domain=' + applied_to_domain + '&RANDOMTEXT=shm:' + message + '&IP=' + _ip
-=======
     secs = calendar.timegm(time.gmtime()) # Seconds since the epoch
 
     # This is the URL to call the api to apply the template
-    url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template + '/apply?domain=' + domain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
->>>>>>> 639496c4148b234d90b8b9fa3dd2378639f5b483
+    if 'template2' in request.forms.keys():
+        url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?domain=' + applied_to_domain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
+    else:
+        url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?domain=' + applied_to_domain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
 
     # Call the api with the oauth acces bearer token
     r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token}, verify=True)

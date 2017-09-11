@@ -1,5 +1,4 @@
-%include('header.tpl')
-
+% include('header.tpl', title='DC Example Service')
 <h1>Example Service Provider</h1>
 <h2>This website demonstrates a sample Domain Connect Service Provider. You enter your domain name, subdomain (optional) and a message to display. Using Domain Connect, these values are places in DNS which are used to later render the message entered as the site content for the domain/subdomain.</h2>
 
@@ -11,5 +10,4 @@
 <tr><td>&nbsp;</td><td><input type="submit" value="Configure" /></td></tr>
 </table>
 </form>
-
 %include('footer.tpl')

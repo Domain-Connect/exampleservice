@@ -1,5 +1,4 @@
-%include('header.tpl')
-
+% include('header.tpl', title='Asynchronous Configuration')
 % if applied == 0:
 <h1>Access Granted</h1>
 Access has been granted to {{domain}}.
@@ -32,3 +31,4 @@ You've applied a template to {{domain}}
 </table>
 </form>
 %include('footer.tpl')
+

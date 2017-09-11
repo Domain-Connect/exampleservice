@@ -1,5 +1,4 @@
-%include('header.tpl')
-
+% include('header.tpl', title='Configure Domain Connect')
 <h1>Provider Found</h1>
 Your domain uses {{providerName}}
 <p/>

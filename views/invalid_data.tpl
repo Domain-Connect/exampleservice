@@ -1,4 +1,4 @@
-%include('header.tpl')
+% include('header.tpl', title='Invalid Data')
 <h1>Invalid Data</h1>
 Domain name must be a valid domain name.
 <br/>

@@ -12,17 +12,20 @@ You've applied a template to {{domain}}
 . You can apply either template to the same domain, or to another sub domain.
 % end
 <h1>Interesting information (read only):</h1>
-<form method="post" action="/asyncconfig">
 <table>
 % if applied == 0:
-<tr><td>oAuth Response Code from consent:</td><td><input size=50 name=oAuthCode type=text readonly value="{{code}}"/></td></tr>
-<tr><td>JSON from Access Token Fetch</td><td><textarea name=json_response type=text readonly rows="10" cols="50">{{json_response}}</textarea></td></tr>
+<tr><td>oAuth Response Code from consent:</td><td>{{code}}</td></tr>
+<tr><td>JSON from Access Token Fetch</td><td>{{json_response}}</td></tr>
 % end
-<tr><td>Domain:</td><td><input size=50 name=domain type=text readonly value="{{domain}}"/></td></tr>
-<tr><td>API Url Root from DNS Provider:</td><td><input size=50 name=urlAPI type=text readonly value="{{urlAPI}}"/></td></tr>
-<tr><td>Access Token:</td><td><input size=50 name=access_token type=text readonly value="{{access_token}}"/></td></tr>
+<tr><td>Domain:</td><td>{{domain}}</td></tr>
+<tr><td>API Url Root from DNS Provider:</td><td>{{urlAPI}}</td></tr>
+<tr><td>Access Token:</td><td>{{access_token}}</td></tr>
 </table>
+<form method="post" action="/asyncconfig">
 <h1>Apply template:</h1>
+<input size=50 name=domain type=hidden value="{{domain}}"/>
+<input size=50 name=urlAPI type=hidden value="{{urlAPI}}"/>
+<input size=50 name=access_token type=hidden value="{{access_token}}"/>
 <table>
 <tr><td>Sub Domain:</td><td><input size=50 name=subdomain type=text value="{{subdomain}}"/></td></tr>
 <tr><td>Message:</td><td><input size=50 name=message type=text value="{{message}}"/></td></tr>

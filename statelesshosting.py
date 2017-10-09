@@ -91,7 +91,7 @@ def config():
         return template('invalid_data.tpl')
 
     # See if the DNS Provider supports domain connect
-    json_data = _get_domainconnect_json(domain)
+    json_data, host = _get_domainconnect_json(domain)
     if json_data == None:
         return template('no_domain_connect.tpl')
 
@@ -142,13 +142,18 @@ def config():
 
     # Render the confirmation page
     return template('confirm.tpl', 
-		{'providerName' : json_data['providerName'], 
-		'synchronousTargetUrl1' : synchronousTargetUrl1, 
-		'synchronousTargetUrl2' : synchronousTargetUrl2, 
-		'synchronousSignedTargetUrl1' : synchronousSignedTargetUrl1,
-		'synchronousSignedTargetUrl2' : synchronousSignedTargetUrl2,
-		'verified': verified,
-		'asynchronousTargetUrl' : asynchronousTargetUrl})
+		{
+                    'host': host,
+                    'json': json.dumps(),
+                    'domain': domain,
+                    'providerName' : json_data['providerName'], 
+                    'synchronousTargetUrl1' : synchronousTargetUrl1, 
+                    'synchronousTargetUrl2' : synchronousTargetUrl2, 
+                    'synchronousSignedTargetUrl1' : synchronousSignedTargetUrl1,
+                    'synchronousSignedTargetUrl2' : synchronousSignedTargetUrl2,
+                    'verified': verified,
+                    'asynchronousTargetUrl' : asynchronousTargetUrl
+                })
     
 # Handle the redirect back from the oAuth call
 #
@@ -318,7 +323,7 @@ def _get_domainconnect_json(domain):
         # Get the txt record for domain connect from the domain
         answers = dns.resolver.query('_domainconnect.' + domain, 'TXT')
         if len(answers) != 1:
-            return None
+            return None, None
 
         # Get the value to do the json call
         host = answers[0].strings[0]
@@ -326,10 +331,10 @@ def _get_domainconnect_json(domain):
         # Form the URL to get the json and fetch it
         url = 'https://' + host + '/v2/' + domain + '/settings'
         r = requests.get(url, verify=False)
-        return r.json()
+        return r.json(), host
 
     except:
-        return None
+        return None, None
 
 # Generates a signature on the passed in data		
 def _generate_sig(private_key, data):

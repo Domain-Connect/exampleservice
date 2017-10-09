@@ -1,5 +1,8 @@
 % include('header.tpl', title='Configure Domain Connect')
 <h1>Provider Found</h1>
+The query for the _domainconnect TXT record returned: {{host}}
+<p/>
+The json returned by https://{{host}}/v2/{{domain}}/settings: {{json}}
 Your domain uses {{providerName}}
 <p/>
 <a target=_new href='{{synchronousTargetUrl1}}'>Configure Synchronously</a>

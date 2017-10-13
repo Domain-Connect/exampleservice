@@ -17,4 +17,7 @@
 </script>
 
 <body>
-<a href="/domainconnect.org"><img src="static/dclogo.png"></a>
+<a href="http://domainconnect.org"><img src="static/dclogo.png"></a>
+<br/>
+<a href="http://domainconnect.org">[Domain Connect Home]</a>&nbsp;|&nbsp;<a href="http://exampleservice.domainconnect.org">[Example Service Home]</a>
+<br/>

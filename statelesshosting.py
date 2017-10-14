@@ -45,12 +45,17 @@ priv_key = '-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA18SgvpmeasN4BHkkv0S
 
 # We are in the process of moving to better names
 
-#_provider = 'exampleservice.domainconnect.org'
-#_template1 = 'template1'
-#_template2 = 'template2'
-_provider = 'whdhackathon'
-_template1 = 'whd-template-1'
-_template2 = 'whd-template-2'
+_sync_provider = 'exampleservice.domainconnect.org'
+_sync_template1 = 'template1'
+_sync_template2 = 'template2'
+
+_async_provider = 'exampleservice.domainconnect.org'
+_async_template1 = 'template1'
+_async_template2 = 'template2'
+
+#_async_provider = 'whdhackathon'
+#_async_template1 = 'whd-template-1'
+#_async_template2 = 'whd-template-2'
 
 # Secrets per provider that support oAuth
 oAuthSecrets = {
@@ -96,12 +101,9 @@ def sync():
     if json_data == None:
         return template('no_domain_connect.tpl')
 
-    # Get the provider name
-    dns_provider = json_data['providerName']
-    
     # See if our templates are supported
-    check_url1 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1
-    check_url2 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2
+    check_url1 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _sync_provider + '/services/' + _sync_template1
+    check_url2 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _sync_provider + '/services/' + _sync_template2
     if not _check_template(check_url1) or not _check_template(check_url2):
         return template('no_domain_connect.tpl')
 
@@ -113,18 +115,32 @@ def sync():
         qs = qs + '&host=' + subdomain
 
     # Create the URL to oonfigure with domain connect synchronously (both variants)
-    synchronousTargetUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?' + qs
-    synchronousTargetUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qs
+    synchronousUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _sync_provider + '/services/' + _sync_template1 + '/apply?' + qs
+    synchronousUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _sync_provider + '/services/' + _sync_template2 + '/apply?' + qs
 	
     # Create the URL to configure with domain connect synchronously with signature  (both variants)
     sig = _generate_sig(priv_key, qs)
-    synchronousSignedTargetUrl1 = synchronousTargetUrl1 + '&sig=' + sig + '&key=_dck1'
-    synchronousSignedTargetUrl2 = synchronousTargetUrl2 + '&sig=' + sig + '&key=_dck1'
-	
+    synchronousSignedUrl1 = synchronousUrl1 + '&sig=' + sig + '&key=_dck1'
+    synchronousSignedUrl2 = synchronousUrl2 + '&sig=' + sig + '&key=_dck1'
+
+    # Generate the redirect uri
+    redirect_uri = "http://exampleservice.domainconnect.org/sync_confirm?domain=" + domain + "&subdomain=" + subdomain
+
+    qsRedirect = qs + "&redirect_uri=" + urllib.quote(redirect_uri)
+
+    synchronousRedirectUrl1 = synchronousUrl1 + "&redirect_uri=" + urllib.quote(redirect_uri)
+    synchronousRedirectUrl2 = synchronousUrl2 + "&redirect_uri=" + urllib.quote(redirect_uri)
+
+
+    sigRedirect = _generate_sig(priv_key, qsRedirect)
+
+    synchronousSignedRedirectUrl1 = synchronousRedirectUrl1 + "&sig=" + sigRedirect + '&key=_dck1'
+    synchronousSignedRedirectUrl2 = synchronousRedirectUrl2 + "&sig=" + sigRedirect + '&key=_dck1'
+    
     # For fun, verify the signature 
     pub_key = _get_publickey('_dck1.' + _hosting_website)
-    #verified = _verify_sig(pub_key, sig, qs)
-    verified = True
+    verified = _verify_sig(pub_key, sig, qs)
+    verifiedRedirect = _verify_sig(pub_key, sigRedirect, qsRedirect)
 
     return template('sync.tpl',
 		{
@@ -132,12 +148,35 @@ def sync():
                     'json': json.dumps(json_data),
                     'domain': domain,
                     'providerName' : json_data['providerName'], 
-                    'synchronousTargetUrl1' : synchronousTargetUrl1, 
-                    'synchronousTargetUrl2' : synchronousTargetUrl2, 
-                    'synchronousSignedTargetUrl1' : synchronousSignedTargetUrl1,
-                    'synchronousSignedTargetUrl2' : synchronousSignedTargetUrl2,
-                    'verified': verified
+                    'synchronousUrl1' : synchronousUrl1, 
+                    'synchronousUrl2' : synchronousUrl2, 
+                    'synchronousSignedUrl1' : synchronousSignedUrl1,
+                    'synchronousSignedUrl2' : synchronousSignedUrl2,
+                    'verified': verified,
+                    'synchronousRedirectUrl1' : synchronousRedirectUrl1, 
+                    'synchronousRedirectUrl2' : synchronousRedirectUrl2, 
+                    'synchronousSignedRedirectUrl1' : synchronousSignedRedirectUrl1,
+                    'synchronousSignedRedirectUrl2' : synchronousSignedRedirectUrl2,
+                    'verifiedRedirect': verified
                 })                    
+
+@route('/sync_confirm', method='GET')
+def sync_confirm():
+    domain = request.query.get('domain')
+    subdomain = request.query.get('subdomain')
+    error = request.query.get('error')
+
+    if error != None and error != '':
+        return template('sync_error.tpl',
+                        {
+                            'error': error
+                        })
+
+    return template('sync_confirm.tpl',
+                    {
+                        'domain': domain,
+                        'subdomain': subdomain
+                    })
 
 @route('/async', method='POST')
 def async():
@@ -163,8 +202,8 @@ def async():
     dns_provider = json_data['providerName']
     
     # See if our templates are supported
-    check_url1 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1
-    check_url2 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2
+    check_url1 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _async_provider + '/services/' + _async_template1
+    check_url2 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + _async_provider + '/services/' + _async_template2
     if not _check_template(check_url1) or not _check_template(check_url2):
         return template('no_domain_connect.tpl')
 
@@ -176,10 +215,10 @@ def async():
     redirect_url = "http://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&urlAPI=" + json_data['urlAPI'] + "&dns_provider=" + dns_provider
 
     # Right now the call to get a permission requires the template in the path. Doesn't matter which one.  Spec is updating to eliminate this
-    asynchronousTargetUrl = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '?' + \
+    asynchronousUrl = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _async_provider + '/services/' + _async_template1 + '?' + \
             'domain=' + domain + \
-            "&client_id=" + _provider + \
-            "&scope=" + _template1 + ' ' + _template2 + \
+            "&client_id=" + _async_provider + \
+            "&scope=" + _async_template1 + ' ' + _async_template2 + \
             "&redirect_uri=" + urllib.quote(redirect_url)
 
 
@@ -189,7 +228,7 @@ def async():
                     'json': json.dumps(json_data),
                     'domain': domain,
                     'providerName' : json_data['providerName'], 
-                    'asynchronousTargetUrl': asynchronousTargetUrl
+                    'asynchronousUrl': asynchronousUrl
                 })                    
                     
 # Handle the redirect back from the oAuth call
@@ -215,26 +254,33 @@ def async_oauth_response():
     dns_provider = request.query.get('dns_provider')
     error = request.query.get('error')
     
-    if error != None:
-        return 'Error'
-    
-    else:
-        # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
-        url = urlAPI + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + oAuthSecrets[dns_provider]
-        
-        # Some oauth implmentations ask for the original redirect url when getting the access token
-        #redirect_url = "http://" + host + "/oauthresponse?domain=" + domain + "&message=" + message + "&urlAPI=" + urlAPI
-        #"&redirect_uri=" + urllib.quote(redirect_url) 
-        
-        # Call the oauth provider and get the access token
-        print url
-        r = requests.post(url, verify=True)
-        
-        json_response = r.json()
-        access_token = json_response['access_token']
+    if error != None and error != '':
+        return template('async_error',
+                    {
+                        'error': error
+                    })
 
-        # Return a page. Normally you would store the access and re-auth tokens and redirect the client browser
-        d = {
+    # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
+    url = urlAPI + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _async_provider + "&client_secret=" + oAuthSecrets[dns_provider]
+      
+    # Some oauth implmentations ask for the original redirect url when getting the access token
+    #redirect_url = "http://" + host + "/oauthresponse?domain=" + domain + "&message=" + message + "&urlAPI=" + urlAPI
+    #"&redirect_uri=" + urllib.quote(redirect_url) 
+        
+    # Call the oauth provider and get the access token
+    r = requests.post(url, verify=True)
+    if r.status_code >= 300:
+        return template('async_error',
+                        {
+                        'error': 'Error getting access_token: ' +  r.text
+                        })
+
+    json_response = r.json()
+    access_token = json_response['access_token']
+
+    # Return a page. Normally you would store the access and re-auth tokens and redirect the client browser
+    return template('async_oauth_response.tpl',
+        {
              "json_response": json_response, 
              "code": code, 
              "access_token" : access_token, 
@@ -242,8 +288,7 @@ def async_oauth_response():
              "domain": domain, 
              "hosts" : hosts, 
              "urlAPI" : urlAPI
-            }
-        return template('async_oauth_response.tpl', d)
+        })
 
 # Handle the form post for the processing the asynchronous setting using an oAuth access token. 
 @route("/async_confirm", method='POST')
@@ -269,9 +314,9 @@ def ascync_confirm():
 
     # This is the URL to call the api to apply the template
     if 'template2' in request.forms.keys():
-        url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?domain=' + domain + '&host=' + subdomain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
+        url = urlAPI + '/v2/domainTemplates/providers/' + _async_provider + '/services/' + _async_template2 + '/apply?domain=' + domain + '&host=' + subdomain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
     else:
-        url = urlAPI + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?domain=' + domain + '&host=' + subdomain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
+        url = urlAPI + '/v2/domainTemplates/providers/' + _async_provider + '/services/' + _async_template1 + '/apply?domain=' + domain + '&host=' + subdomain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
 
     # Call the api with the oauth acces bearer token
     r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token}, verify=True)

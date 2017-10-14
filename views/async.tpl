@@ -5,6 +5,6 @@ The query for the _domainconnect TXT record returned: {{txt}}
 <p/>
 The json returned by https://{{txt}}/v2/{{domain}}/settings: {{json}}
 <p/>
-<a href='{{asynchronousTargetUrl}}'>Configure Asynchronously</a>
+<a href='{{asynchronousUrl}}'>Configure Asynchronously</a>
 
 %include('footer.tpl')

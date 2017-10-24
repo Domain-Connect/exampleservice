@@ -9,14 +9,15 @@ Access has been granted to {{domain}}.
 <tr><td>oAuth Response Code from consent:</td><td>{{code}}</td></tr>
 <tr><td>JSON from Access Token Fetch</td><td>{{json_response}}</td></tr>
 <tr><td>Domain:</td><td>{{domain}}</td></tr>
-<tr><td>API Url Root from DNS Provider:</td><td>{{urlAPI}}</td></tr>
+<tr><td>Hosts:</td><td>{{hosts}}</td></tr>
+<tr><td>DNS Provider:</td><td>{{dns_provider}}</td></tr>
 <tr><td>Access Token:</td><td>{{access_token}}</td></tr>
 </table>
 <form method="post" action="/async_confirm">
 <h1>Apply template:</h1>
 <input name=domain type=hidden value="{{domain}}"/>
 <input name=hosts type=hidden value="{{hosts}}"/>
-<input name=urlAPI type=hidden value="{{urlAPI}}"/>
+<input name=dns_provider type=hidden value="{{dns_provider}}"/>
 <input name=access_token type=hidden value="{{access_token}}"/>
 <table>
 <tr><td>Domain:</td><td>{{domain}}</td></tr>

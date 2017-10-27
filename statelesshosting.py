@@ -71,7 +71,7 @@ def index():
         return template('index.tpl', {})
     else:
         # See if the text string was put into DNS
-        messagetext = _get_messagetext(host)
+        messagetext = _get_messagetext(request.headers['Host'])
 
         # We only render a site for domains that have been configured with a message
         if messagetext == None or messagetext == '':
@@ -340,7 +340,7 @@ def ascync_confirm():
 
 # Gets the message text put into DNS for a domain name
 def _get_messagetext(domain):
-    #try:
+    try:
         messagetext = ''
 
         # Get the txt record for domain connect
@@ -362,8 +362,8 @@ def _get_messagetext(domain):
 
         return messagetext
 
-    #except:
-    #    return None
+    except:
+        return None
 
 # Get TXT records and parse them for the public key
 def _get_publickey(domain):

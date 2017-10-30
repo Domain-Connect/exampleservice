@@ -156,10 +156,15 @@ def sync():
                     'height': height,
                     'synchronousUrl1' : synchronousUrl1, 
                     'synchronousSignedUrl2' : synchronousSignedUrl2,
+                    'qs': qs,
+                    'sig': sig,
                     'verified': verified,
                     'synchronousRedirectUrl1' : synchronousRedirectUrl1, 
                     'synchronousSignedRedirectUrl2' : synchronousSignedRedirectUrl2,
-                    'verifiedRedirect': verifiedRedirect
+                    'qsRedirect' : qsRedirect,
+                    'sigRedirect': sigRedirect,
+                    'verifiedRedirect': verifiedRedirect,
+                    'pubKey': pub_key
                 })                    
 
 @route('/sync_confirm', method='GET')
@@ -368,19 +373,20 @@ def _get_messagetext(domain):
 # Get TXT records and parse them for the public key
 def _get_publickey(domain):
     try:
-        keysegments = []
+        segments = {}
         publickey = '-----BEGIN PUBLIC KEY-----\n' # Key begins with prefix
 
         records = dns.resolver.query(domain, 'TXT') # Get all text records
         for text in records:
             split_text = text.strings[0].split(',') # Separate the index and key
-            key_index = int(split_text[0][2:]) - 1 # Get the index of the key segment to order key correctly
-            key_string = split_text[2][2:] # Get the segment of the TXT record which contains part of the public key
-            keysegments.insert(key_index, key_string) # Insert the segment of the text record at the proper index
+            segment_index = int(split_text[0][2:]) - 1 # Get the index of the key segment to order key correctly
+            segment_data = split_text[2][2:] # Get the segment of the TXT record which contains part of the public key
+            segments[segment_index] = segment_data # Add this portion
         
         # Concatenate all of the key segments
-        for segment in keysegments:
-            publickey += segment
+        for key in sorted(segments.iterkeys()):
+            publickey = publickey + segments[key]
+
         publickey += '\n-----END PUBLIC KEY-----' # Add suffix
 
         return publickey

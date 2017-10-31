@@ -11,7 +11,7 @@ The json returned by https://{{txt}}/v2/{{domain}}/settings: {{json}}
 <h2>New Window</h2>
 <a target=_new href='javascript:null(void);' onclick='window.open("{{synchronousUrl1}}", "", "width={{width}},height={{height}}");'>Configure Template 1</a>
 <p/>
-<a target=_new href='javascript:null(void);' onclick='windowopen("{{synchronousSignedUrl2}}", "", "width={{width}},height={{height}}");'>Configure Template 2 Synchronously with Signature Verification</a>
+<a target=_new href='javascript:null(void);' onclick='window.open("{{synchronousSignedUrl2}}", "", "width={{width}},height={{height}}");'>Configure Template 2 Synchronously with Signature Verification</a>
 <h2>In Place w/ Redirect</h2>
 <a href='{{synchronousRedirectUrl1}}'>Configure Template 1</a>
 <p/>

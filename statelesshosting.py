@@ -117,16 +117,16 @@ def sync():
     secs = calendar.timegm(time.gmtime()) # Seconds since the epoch
 		
     # Generate the query string for synchronous calls
-    qs = 'domain=' + domain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
+    qs = 'domain=' + urllib.quote(domain) + '&RANDOMTEXT=' + urllib.quote('shm:' + str(secs) + ':' + message) + '&IP=' + urllib.quote(_ip)
     if subdomain != '' and subdomain != None:
-        qs = qs + '&host=' + subdomain
+        qs = qs + '&host=' + urllib.quote(subdomain)
 
     # Create the URL to configure template 1
     synchronousUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?' + qs
 	
     # Create the URL to configure template2. Template 2 needs a singature
     sig = _generate_sig(priv_key, qs)
-    synchronousSignedUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qs + '&sig=' + sig + '&key=_dck1'
+    synchronousSignedUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qs + '&sig=' + urllib.quote(sig) + '&key=_dck1'
 
     # Generate the redirect uri
     redirect_uri = "http://" + _hosting_website + "/sync_confirm?domain=" + domain + "&subdomain=" + subdomain
@@ -138,8 +138,8 @@ def sync():
     synchronousRedirectUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?' + qsRedirect
 
     # Create the URL to configure template 2 with a redirect back. Template 2 needs a signature
-    sigRedirect = _generate_sig(priv_key, qs + "&redirect_uri=" + urllib.quote(redirect_uri))
-    synchronousSignedRedirectUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qsRedirect + '&sig=' + sigRedirect + '&key=_dck1'
+    sigRedirect = _generate_sig(priv_key, qsRedirect)
+    synchronousSignedRedirectUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qsRedirect + '&sig=' + urllib.quote(sigRedirect) + '&key=_dck1'
     
     # For fun, verify the signatures.  Mostly to show how a DNS Provider would do this.
     pub_key = _get_publickey('_dck1.' + _hosting_website)

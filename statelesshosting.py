@@ -379,9 +379,23 @@ def _get_publickey(domain):
         records = dns.resolver.query(domain, 'TXT') # Get all text records
         for text in records:
             split_text = text.strings[0].split(',') # Separate the index and key
-            segment_index = int(split_text[0][2:]) - 1 # Get the index of the key segment to order key correctly
-            segment_data = split_text[2][2:] # Get the segment of the TXT record which contains part of the public key
-            segments[segment_index] = segment_data # Add this portion
+            index = -1
+            indexData = None
+            for kv in split_text:
+                parsed_kv = kv.split("=")
+                key = parsed_kv[0]
+                value = parsed_kv[1]
+                if key == "p":
+                    index = int(value)
+                elif key == "d":
+                    indexData = value
+                elif key == "a" and value.upper() != "RS256":
+                    return None
+                elif key == "t" and value.lower() != "x509":
+                    return None
+
+            if index != -1 and indexData != None:
+                segments[index] = indexData
         
         # Concatenate all of the key segments
         for key in sorted(segments.iterkeys()):

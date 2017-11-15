@@ -75,6 +75,9 @@ def index():
         if messagetext == None or messagetext == '':
             return abort(404)
 
+        print messagetext
+        print request.headers['Host']
+
         # Render the site 
         return template('site.tpl', {'host': request.headers['Host'], 'messagetext': messagetext})
 
@@ -261,15 +264,14 @@ def async_oauth_response():
     if error != None and error != '':
         return template('async_error',
                     {
-                        'error': error
+                        'error': 'Error returned from DNSProvider (' + error + ')'
                     })
 
+    # The original redirect url when getting the access token
+    redirect_url = "http://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
+
     # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
-    url = oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + oAuthSecrets[dns_provider]
-      
-    # Some oauth implmentations ask for the original redirect url when getting the access token
-    #redirect_url = "http://" + host + "/oauthresponse?domain=" + domain + "&message=" + message 
-    #"&redirect_uri=" + urllib.quote(redirect_url) 
+    url = oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + oAuthSecrets[dns_provider] + "&redirect_uri=" + urllib.quote(redirect_url)
         
     # Call the oauth provider and get the access token
     r = requests.post(url, verify=True)

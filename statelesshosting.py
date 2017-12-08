@@ -50,12 +50,14 @@ _template2 = 'template2'
 # Secrets per provider that support oAuth
 oAuthSecrets = {
     'GoDaddy' : 'DomainConnectGeheimnisSecretString',
-    'Secure Server' : 'DomainConnectGeheimnisSecretString'
+    'Secure Server' : 'DomainConnectGeheimnisSecretString',
+    '1and1': 'cd$;CVZRj#B8C@o3o8E4v-*k2H7S%)'
 }
 
 oAuthAPIURLs = {
     'GoDaddy' : 'https://domainconnect.api.godaddy.com',
-    'Secure Server' : 'https://domainconnect.api.secureserver.net'
+    'Secure Server' : 'https://domainconnect.api.secureserver.net',
+    '1and1' : 'https://auth.1and1.com/2.0/oauth'
 }
 
 app = default_app()

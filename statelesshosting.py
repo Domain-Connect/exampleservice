@@ -57,7 +57,7 @@ oAuthSecrets = {
 oAuthAPIURLs = {
     'GoDaddy' : 'https://domainconnect.api.godaddy.com',
     'Secure Server' : 'https://domainconnect.api.secureserver.net',
-    '1and1' : 'https://auth.1and1.com/2.0/oauth'
+    '1and1' : 'https://api.domainconnect.1and1.com'
 }
 
 app = default_app()

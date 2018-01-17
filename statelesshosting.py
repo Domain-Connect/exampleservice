@@ -279,7 +279,7 @@ def async_oauth_response():
     redirect_url = "http://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
 
     # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
-    url = oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + oAuthSecrets[dns_provider] + "&redirect_uri=" + urllib.quote(redirect_url)
+    url = oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + urllib.quote(oAuthSecrets[dns_provider]) + "&redirect_uri=" + urllib.quote(redirect_url)
         
     # Call the oauth provider and get the access token
     r = requests.post(url, verify=True)

@@ -5,6 +5,9 @@ The query for the _domainconnect TXT record returned: {{txt}}
 <p/>
 The json returned by https://{{txt}}/v2/{{domain}}/settings: {{json}}
 <p/>
-<a href='{{asynchronousUrl}}'>Configure Asynchronously</a>
-
+<a href='{{asynchronousUrl}}'>Configure Asynchronously: Obsolete with service in path</a>
+<p/>
+<a href='{{asynchronousUrl2}}'>Configure Asynchronously: Current spec without service in path</a>
+<p/>
+NOTE: The spec was updated to remove the service from the path, as this is now specified in the scope. Some older providers are still updating.
 %include('footer.tpl')

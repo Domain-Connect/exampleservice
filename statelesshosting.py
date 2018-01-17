@@ -231,6 +231,11 @@ def async():
             "&scope=" + _template1 + ' ' + _template2 + \
             "&redirect_uri=" + urllib.quote(redirect_url)
 
+    asynchronousUrl2 = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '?' + \
+            'domain=' + domain + \
+            "&client_id=" + _provider + \
+            "&scope=" + _template1 + ' ' + _template2 + \
+            "&redirect_uri=" + urllib.quote(redirect_url)
 
     return template('async.tpl',
 		{
@@ -238,7 +243,8 @@ def async():
                     'json': json.dumps(json_data),
                     'domain': domain,
                     'providerName' : json_data['providerName'], 
-                    'asynchronousUrl': asynchronousUrl
+                    'asynchronousUrl': asynchronousUrl,
+                    'asynchronousUrl2' : asynchronousUrl2
                 })                    
                     
 # Handle the redirect back from the oAuth call

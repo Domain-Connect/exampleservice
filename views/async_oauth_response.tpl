@@ -24,6 +24,7 @@ Access has been granted to {{domain}}.
 <tr><td>Hosts:</td><td>{{hosts}}</td></tr>
 <tr><td>Sub Domain:</td><td><input size=50 name=subdomain type=text value=""/></td></tr>
 <tr><td>Message:</td><td><input size=50 name=message type=text value=""/></td></tr>
+<tr><td>Force:</td><td><input type="checkbox" name="force" value="1"/></td></tr>
 <tr><td>&nbsp;</td><td><input type="submit" value="Apply Template 1"/></td>
 <tr><td>&nbsp;</td><td><input type="submit" value="Apply Template 2" name="template2"/></td>
 </table>

@@ -77,9 +77,6 @@ def index():
         if messagetext == None or messagetext == '':
             return abort(404)
 
-        print messagetext
-        print request.headers['Host']
-
         # Render the site 
         return template('site.tpl', {'host': request.headers['Host'], 'messagetext': messagetext})
 
@@ -319,6 +316,11 @@ def ascync_confirm():
     message = request.forms.get('message')
     access_token = request.forms.get('access_token')
     dns_provider = request.forms.get('dns_provider')
+    force = request.forms.get('force')
+    if force == None or force == '':
+        force = 0
+    else:
+        force = 1
 
     # Validate the form settings
     if domain == None or domain == '' or not _is_valid_hostname(domain) or message == None or message == '' or not _is_valid_message(message) or access_token == None or access_token == '' or dns_provider == None or dns_provider == '':
@@ -328,15 +330,16 @@ def ascync_confirm():
 
     # This is the URL to call the api to apply the template
     if 'template2' in request.forms.keys():
-        url = oAuthAPIURLs[dns_provider] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?domain=' + domain + '&host=' + subdomain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
+        url = oAuthAPIURLs[dns_provider] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?domain=' + domain + '&host=' + subdomain + '&force=' + str(force) + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
         applied_template = 'Template 2'
     else:
-        url = oAuthAPIURLs[dns_provider] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?domain=' + domain + '&host=' + subdomain + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
+        url = oAuthAPIURLs[dns_provider] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?domain=' + domain + '&host=' + subdomain + '&force=' + str(force) + '&RANDOMTEXT=shm:' + str(secs) + ':' + message + '&IP=' + _ip
         applied_template = 'Template 1'
 
     # Call the api with the oauth acces bearer token
+
     r = requests.post(url, headers={'Authorization': 'Bearer ' + access_token}, verify=True)
-    
+
     # If this fails, and there is a re-auth token, we could add this code here
 
     # Return a page. Normally you would store the access and re-auth tokens and redirect the client browser
@@ -347,7 +350,8 @@ def ascync_confirm():
          "domain": domain, 
          "subdomain": subdomain,
          "hosts": hosts,
-         "dns_provider" : dns_provider
+         "dns_provider" : dns_provider,
+         "status_code" : str(r.status_code)
      })
 
 

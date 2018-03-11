@@ -3,3 +3,4 @@
 <p>Domain does not support domain connect. You would need to make DNS changes manually.</p>
 Reason: {{reason}}
 % include('footer.tpl')
+

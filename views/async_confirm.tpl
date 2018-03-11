@@ -34,5 +34,5 @@ An status of '{{status_code}}' was returned applying the template.
 <tr><td>&nbsp;</td><td><input type="submit" value="Apply Template 2" name="template2"/></td>
 </table>
 </form>
-%include('footer.tpl')
+% include('footer.tpl')
 

@@ -33,4 +33,5 @@ The json returned by https://{{txt}}/v2/{{domain}}/settings: {{json}}
 {{pubKey}}
 
 
-%include('footer.tpl')
+% include('footer.tpl')
+

@@ -5,5 +5,5 @@ An error occured applying a synchronous template.
 <p/>
 {{error}}
 
-%include('footer.tpl')
+% include('footer.tpl')
 

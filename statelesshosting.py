@@ -260,8 +260,6 @@ def async():
 @route("/async_oauth_response")
 def async_oauth_response():
 
-    host = request.headers['Host']
-
     # This only works for the hosting website
     if request.headers['Host'] != _hosting_website:
         return abort(404)
@@ -317,6 +315,30 @@ def async_oauth_response():
 
         })
 
+@route("/ddns_oauth_code")
+def ddns_oauth_code():
+
+    # This only works for the hosting website
+    if request.headers['Host'] != _hosting_website:
+        return abort(404)
+    
+    # Get the data from the URL
+    code = request.query.get('code')
+    domain = request.forms.get('domain')
+    error = request.query.get('error')
+
+    if error != None and error != '':
+        return template('async_error',
+                    {
+                        'error': 'Error returned from DNSProvider (' + error + ')'
+                    })
+    # Return template
+    return template('ddns_oauth_code.tpl',
+        {
+            "oauth_code" : code,
+            "domain" : domain
+        })
+
 # Handle the form post for the processing the asynchronous setting using an oAuth access token. 
 @route("/async_confirm", method='POST')
 def async_confirm():
@@ -369,7 +391,6 @@ def async_confirm():
          "dns_provider" : dns_provider,
          "status_code" : str(r.status_code)
      })
-
 
 # Gets the message text put into DNS for a domain name
 def _get_messagetext(domain):

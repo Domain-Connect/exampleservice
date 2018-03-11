@@ -12,4 +12,5 @@ The json returned by https://{{txt}}/v2/{{domain}}/settings: {{json}}
 <a href='{{asynchronousUrl2}}'>Configure Asynchronously: Current spec without service in path</a>
 <p/>
 NOTE: The spec was updated to remove the service from the path, as this is now specified in the scope. Some older providers are still updating.
-%include('footer.tpl')
+% include('footer.tpl')
+

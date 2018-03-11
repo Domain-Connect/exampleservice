@@ -3,6 +3,13 @@
 <head>
 <title>Domain Connect Example</title>
 <style>body {font-family: "Trebuchet MS", Helvetica, sans-serif;}</style>
+<script>
+  function copy(id) {
+    let copyText = document.getElementById(id);
+    copyText.select();
+    document.execCommand("Copy");
+    }
+</script>
 </head>
 
 <script>
@@ -18,6 +25,16 @@
 <body>
 <a href="http://domainconnect.org"><img src="static/dclogo.png"></a>
 <br/>
-<a href="http://domainconnect.org">[Domain Connect Home]</a>&nbsp;|&nbsp;<a href="http://exampleservice.domainconnect.org">[Example Service Home]</a>
-<br/>
 
+<h1>Access Granted</h1>
+Access has been granted to {{domain}}.
+<br/><br/>
+   
+Please copy the following code and enter it into the installer.
+<br/><br/>
+<input type="text" id="code" value="{{oauth_code}}" readonly size="50" style="font-size: 25px"></input>
+
+<button type="button" onclick="copy('code')" style="font-size: 25px">Copy to clipboard</button>
+
+</body>
+</html>

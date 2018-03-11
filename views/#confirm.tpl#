@@ -19,4 +19,5 @@ Your domain uses {{providerName}}
 % else:
     Async not supported by provider
 % end
-%include('footer.tpl')
+% include('footer.tpl')
+

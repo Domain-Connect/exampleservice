@@ -6,5 +6,5 @@ You've applied a template to domain '{{domain}}'
   and subdomain '{{subdomain}}'
 % end
 
-%include('footer.tpl')
+% include('footer.tpl')
 

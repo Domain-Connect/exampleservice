@@ -5,5 +5,5 @@ An error occured.
 <p/>
 {{error}}
 
-%include('footer.tpl')
+% include('footer.tpl')
 

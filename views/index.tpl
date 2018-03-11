@@ -26,4 +26,5 @@ This website demonstrates a sample Domain Connect Service Provider. The service 
 </table>
 </form>
 
-%include('footer.tpl')
+% include('footer.tpl')
+

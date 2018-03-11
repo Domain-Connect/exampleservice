@@ -228,6 +228,12 @@ def async():
             "&scope=" + _template1 + ' ' + _template2 + \
             "&redirect_uri=" + urllib.quote(redirect_url)
 
+    asynchronousUrl3 = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '?' + \
+            'domain=' + domain + \
+            "&client_id=" + _provider + \
+            "&scope=" + _template1 + ' ' + _template2 + \
+            "&redirect_uri=" + urllib.quote(redirect_url + 'code_only=1')
+
     asynchronousUrl2 = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '?' + \
             'domain=' + domain + \
             "&client_id=" + _provider + \
@@ -241,6 +247,7 @@ def async():
                     'domain': domain,
                     'providerName' : json_data['providerName'], 
                     'asynchronousUrl': asynchronousUrl,
+                    'asynchronousUrl3' : asynchronousUrl3,
                     'asynchronousUrl2' : asynchronousUrl2
                 })                    
                     
@@ -265,6 +272,7 @@ def async_oauth_response():
     hosts = request.query.get("hosts")
     dns_provider = request.query.get('dns_provider')
     error = request.query.get('error')
+    code_only = rquest.query.get('code_only')
     
     if error != None and error != '':
         return template('async_error',
@@ -272,33 +280,38 @@ def async_oauth_response():
                         'error': 'Error returned from DNSProvider (' + error + ')'
                     })
 
-    # The original redirect url when getting the access token
-    redirect_url = "http://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
+    if code_only != 1:
 
-    # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
-    url = oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + urllib.quote(oAuthSecrets[dns_provider]) + "&redirect_uri=" + urllib.quote(redirect_url)
+        # The original redirect url when getting the access token
+        redirect_url = "http://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
+
+        # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
+        url = oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + urllib.quote(oAuthSecrets[dns_provider]) + "&redirect_uri=" + urllib.quote(redirect_url)
         
-    # Call the oauth provider and get the access token
-    r = requests.post(url, verify=True)
-    if r.status_code >= 300:
-        return template('async_error',
+        # Call the oauth provider and get the access token
+        r = requests.post(url, verify=True)
+        if r.status_code >= 300:
+            return template('async_error',
                         {
                         'error': 'Error getting access_token: ' +  r.text
                         })
 
-    json_response = r.json()
-    access_token = json_response['access_token']
+        json_response = r.json()
+        access_token = json_response['access_token']
 
     # Return a page. Normally you would store the access and re-auth tokens and redirect the client browser
     return template('async_oauth_response.tpl',
         {
-             "json_response": json_response, 
-             "code": code, 
-             "access_token" : access_token, 
+            "code_only" : code_only,
+            "code": code, 
 
-             "domain": domain, 
-             "hosts" : hosts, 
-             "dns_provider": dns_provider,
+            "domain": domain, 
+            "hosts" : hosts, 
+            "dns_provider": dns_provider,
+
+            "access_token" : access_token, 
+            "json_response": json_response, 
+
         })
 
 # Handle the form post for the processing the asynchronous setting using an oAuth access token. 

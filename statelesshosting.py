@@ -272,7 +272,7 @@ def async_oauth_response():
     hosts = request.query.get("hosts")
     dns_provider = request.query.get('dns_provider')
     error = request.query.get('error')
-    code_only = rquest.query.get('code_only')
+    code_only = request.query.get('code_only')
     
     if error != None and error != '':
         return template('async_error',
@@ -280,7 +280,7 @@ def async_oauth_response():
                         'error': 'Error returned from DNSProvider (' + error + ')'
                     })
 
-    if code_only != 1:
+    if code_only != '1':
 
         # The original redirect url when getting the access token
         redirect_url = "http://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
@@ -298,6 +298,9 @@ def async_oauth_response():
 
         json_response = r.json()
         access_token = json_response['access_token']
+    else:
+        access_token = ''
+        json_response = ''
 
     # Return a page. Normally you would store the access and re-auth tokens and redirect the client browser
     return template('async_oauth_response.tpl',

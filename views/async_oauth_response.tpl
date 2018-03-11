@@ -7,14 +7,16 @@ Access has been granted to {{domain}}.
 <h1>Interesting information (read only):</h1>
 <table>
 <tr><td>oAuth Response Code from consent:</td><td>{{code}}</td></tr>
-% if code_only: <tr><td>JSON from Access Token Fetch</td><td>{{json_response}}</td></tr>
+% if not code_only:
+<tr><td>JSON from Access Token Fetch</td><td>{{json_response}}</td></tr>
 <tr><td>Domain:</td><td>{{domain}}</td></tr>
 <tr><td>Hosts:</td><td>{{hosts}}</td></tr>
 <tr><td>DNS Provider:</td><td>{{dns_provider}}</td></tr>
-% if code_only: <tr><td>Access Token:</td><td>{{access_token}}</td></tr>
+% if not code_only:
+<tr><td>Access Token:</td><td>{{access_token}}</td></tr>
 </table>
 
-% if code_only:
+% if not code_only:
   <form method="post" action="/async_confirm">
   <h1>Apply template:</h1>
   <input name=domain type=hidden value="{{domain}}"/>

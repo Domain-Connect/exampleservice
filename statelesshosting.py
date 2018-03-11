@@ -232,7 +232,7 @@ def async():
             'domain=' + domain + \
             "&client_id=" + _provider + \
             "&scope=" + _template1 + ' ' + _template2 + \
-            "&redirect_uri=" + urllib.quote(redirect_url + 'code_only=1')
+            "&redirect_uri=" + urllib.quote(redirect_url + '&code_only=1')
 
     asynchronousUrl2 = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '?' + \
             'domain=' + domain + \

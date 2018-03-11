@@ -303,7 +303,7 @@ def async_oauth_response():
 
 # Handle the form post for the processing the asynchronous setting using an oAuth access token. 
 @route("/async_confirm", method='POST')
-def ascync_confirm():
+def async_confirm():
 
     # This only works for the hosting website
     if request.headers['Host'] != _hosting_website:

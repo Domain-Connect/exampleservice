@@ -3,11 +3,9 @@
 <h1>Provider Found: Your domain uses {{providerName}}</h1>
 The query for the _domainconnect TXT record returned: {{txt}}
 <p/>
-The json returned by https://{{txt}}/v2/{{domain}}/settings: {{json}}
+The json returned by https://{{txt}}/v2/{{domain}}/settings:<br/> {{json}}
 <p/>
 <a href='{{asynchronousUrl}}'>Configure Asynchronously: Obsolete with service in path</a>
-<p/>
-<a href='{{asynchronousUrl3}}'>Configure Asynchronously (Code Only): Obsolete with service in path</a>
 <p/>
 <a href='{{asynchronousUrl2}}'>Configure Asynchronously: Current spec without service in path</a>
 <p/>

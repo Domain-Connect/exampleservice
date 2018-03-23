@@ -1,4 +1,4 @@
-from bottle import Bottle, run, route, template, request, response, abort, static_file, default_app
+from bottle import Bottle, run, route, template, request, response, abort, static_file, default_app, redirect
 from dns.resolver import dns
 
 from Crypto.PublicKey import RSA
@@ -19,6 +19,12 @@ _ip = '132.148.25.185'
 
 # This is the host name of our application
 _hosting_website = 'exampleservice.domainconnect.org'
+
+# This is the host name of the dynamic dns app (we sunck this in here here for convenience)
+_dynamicdns_website = 'dynamicdns.domainconnect.org'
+
+# Protocol for the app
+_protocol = 'https'
 
 # This is the private key used to generate signatures.
 #
@@ -66,9 +72,42 @@ app = default_app()
 @route('/')
 def index():
 
+    protocol = request.urlparts.scheme
+
     # If the host is my hosting website, render the home page
     if request.headers['Host'] == _hosting_website:
-        return template('index.tpl', {})
+        
+        if protocol == _protocol:
+            return template('index.tpl', {})
+        elif _protocol == 'https':
+            return redirect('https://' + _hosting_website, code=302)
+        else:
+            return abort(404)
+
+    # If the host is the dynamic dns website, render its page
+    elif request.headers['Host'] == _dynamicdns_website:
+        if protocol != _protocol:
+            return abort(404)
+
+        # Get the data from the URL
+        code = request.query.get('code')
+        domain = request.query.get('domain')
+        error = request.query.get('error')
+
+
+        if error != None and error != '':
+            return template('ddns_error',
+                    {
+                        'error': 'Error returned from DNSProvider (' + error + ')'
+                    })
+
+        # Return template
+        return template('ddns_oauth_code.tpl',
+                        {
+                            "oauth_code" : code,
+                            "domain" : domain
+                        })
+
     else:
         # See if the text string was put into DNS
         messagetext = _get_messagetext(request.headers['Host'])
@@ -80,12 +119,22 @@ def index():
         # Render the site 
         return template('site.tpl', {'host': request.headers['Host'], 'messagetext': messagetext})
 
+@route("/ddns_oauth_code")
+def ddns_oauth_code():
+
+    # This only works for the hosting website over the supported protocol
+    if request.headers['Host'] != _hosting_website or request.urlparts.scheme != _protocol:
+        return abort(404)
+    
+
+
 @route('/sync', method='POST')
 def sync():
     
-    # This only works for the hosting website
-    if request.headers['Host'] != _hosting_website:
+    # This only works for the hosting website over the supported protocol
+    if request.headers['Host'] != _hosting_website or request.urlparts.scheme != _protocol:
         return abort(404)
+
 
     # Get the domain/message and validate
     domain = request.forms.get('domain')
@@ -129,7 +178,7 @@ def sync():
     synchronousSignedUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qs + '&sig=' + urllib.quote(sig) + '&key=_dck1'
 
     # Generate the redirect uri
-    redirect_uri = "http://" + _hosting_website + "/sync_confirm?domain=" + domain + "&subdomain=" + subdomain
+    redirect_uri = _protocol + "://" + _hosting_website + "/sync_confirm?domain=" + domain + "&subdomain=" + subdomain
 
     # Query string with the redirect
     qsRedirect = qs + "&redirect_uri=" + urllib.quote(redirect_uri)
@@ -169,6 +218,11 @@ def sync():
 
 @route('/sync_confirm', method='GET')
 def sync_confirm():
+
+    # This only works for the hosting website over the supported protocol
+    if request.headers['Host'] != _hosting_website or request.urlparts.scheme != _protocol:
+        return abort(404)
+
     domain = request.query.get('domain')
     subdomain = request.query.get('subdomain')
     error = request.query.get('error')
@@ -188,8 +242,8 @@ def sync_confirm():
 @route('/async', method='POST')
 def async():
 
-    # This only works for the hosting website
-    if request.headers['Host'] != _hosting_website:
+    # This only works for the hosting website over the supported protocol
+    if request.headers['Host'] != _hosting_website or request.urlparts.scheme != _protocol:
         return abort(404)
 
     # Get the domain and hosts
@@ -219,7 +273,7 @@ def async():
         return template('no_domain_connect.tpl', {'reason' : 'Not onboarded as oAuth provider'})
 
     # The redirect_url is part of oAuth and where the user will be sent after consent. Appended to this URL will be the OAuth code or an error
-    redirect_url = "http://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
+    redirect_url = _protocol + "://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
 
     # Right now the call to get a permission requires the template in the path. Doesn't matter which one.  Spec is updating to eliminate this
     asynchronousUrl = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '?' + \
@@ -227,12 +281,6 @@ def async():
             "&client_id=" + _provider + \
             "&scope=" + _template1 + ' ' + _template2 + \
             "&redirect_uri=" + urllib.quote(redirect_url)
-
-    asynchronousUrl3 = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '?' + \
-            'domain=' + domain + \
-            "&client_id=" + _provider + \
-            "&scope=" + _template1 + ' ' + _template2 + \
-            "&redirect_uri=" + urllib.quote(redirect_url + '&code_only=1')
 
     asynchronousUrl2 = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '?' + \
             'domain=' + domain + \
@@ -247,7 +295,6 @@ def async():
                     'domain': domain,
                     'providerName' : json_data['providerName'], 
                     'asynchronousUrl': asynchronousUrl,
-                    'asynchronousUrl3' : asynchronousUrl3,
                     'asynchronousUrl2' : asynchronousUrl2
                 })                    
                     
@@ -260,8 +307,8 @@ def async():
 @route("/async_oauth_response")
 def async_oauth_response():
 
-    # This only works for the hosting website
-    if request.headers['Host'] != _hosting_website:
+    # This only works for the hosting website over the supported protocol
+    if request.headers['Host'] != _hosting_website or request.urlparts.scheme != _protocol:
         return abort(404)
 
     # Get the data from the URL
@@ -270,7 +317,6 @@ def async_oauth_response():
     hosts = request.query.get("hosts")
     dns_provider = request.query.get('dns_provider')
     error = request.query.get('error')
-    code_only = request.query.get('code_only')
     
     if error != None and error != '':
         return template('async_error',
@@ -278,32 +324,26 @@ def async_oauth_response():
                         'error': 'Error returned from DNSProvider (' + error + ')'
                     })
 
-    if code_only != '1':
+    # The original redirect url when getting the access token
+    redirect_url = _protocol + "://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
 
-        # The original redirect url when getting the access token
-        redirect_url = "http://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
-
-        # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
-        url = oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + urllib.quote(oAuthSecrets[dns_provider]) + "&redirect_uri=" + urllib.quote(redirect_url)
+    # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
+    url = oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + urllib.quote(oAuthSecrets[dns_provider]) + "&redirect_uri=" + urllib.quote(redirect_url)
         
-        # Call the oauth provider and get the access token
-        r = requests.post(url, verify=True)
-        if r.status_code >= 300:
-            return template('async_error',
+    # Call the oauth provider and get the access token
+    r = requests.post(url, verify=True)
+    if r.status_code >= 300:
+        return template('async_error',
                         {
                         'error': 'Error getting access_token: ' +  r.text
                         })
 
-        json_response = r.json()
-        access_token = json_response['access_token']
-    else:
-        access_token = ''
-        json_response = ''
+    json_response = r.json()
+    access_token = json_response['access_token']
 
     # Return a page. Normally you would store the access and re-auth tokens and redirect the client browser
     return template('async_oauth_response.tpl',
         {
-            "code_only" : code_only,
             "code": code, 
 
             "domain": domain, 
@@ -315,36 +355,12 @@ def async_oauth_response():
 
         })
 
-@route("/ddns_oauth_code")
-def ddns_oauth_code():
-
-    # This only works for the hosting website
-    if request.headers['Host'] != _hosting_website:
-        return abort(404)
-    
-    # Get the data from the URL
-    code = request.query.get('code')
-    domain = request.forms.get('domain')
-    error = request.query.get('error')
-
-    if error != None and error != '':
-        return template('async_error',
-                    {
-                        'error': 'Error returned from DNSProvider (' + error + ')'
-                    })
-    # Return template
-    return template('ddns_oauth_code.tpl',
-        {
-            "oauth_code" : code,
-            "domain" : domain
-        })
-
 # Handle the form post for the processing the asynchronous setting using an oAuth access token. 
 @route("/async_confirm", method='POST')
 def async_confirm():
 
-    # This only works for the hosting website
-    if request.headers['Host'] != _hosting_website:
+    # This only works for the hosting website over the supported protocol
+    if request.headers['Host'] != _hosting_website or request.urlparts.scheme != _protocol:
         return abort(404)
 
     # Get the domain name, message, acccess token

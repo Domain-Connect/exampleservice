@@ -84,30 +84,6 @@ def index():
         else:
             return abort(404)
 
-    # If the host is the dynamic dns website, render its page
-    elif request.headers['Host'] == _dynamicdns_website:
-        if protocol != _protocol:
-            return abort(404)
-
-        # Get the data from the URL
-        code = request.query.get('code')
-        domain = request.query.get('domain')
-        error = request.query.get('error')
-
-
-        if error != None and error != '':
-            return template('ddns_error',
-                    {
-                        'error': 'Error returned from DNSProvider (' + error + ')'
-                    })
-
-        # Return template
-        return template('ddns_oauth_code.tpl',
-                        {
-                            "oauth_code" : code,
-                            "domain" : domain
-                        })
-
     else:
         # See if the text string was put into DNS
         messagetext = _get_messagetext(request.headers['Host'])
@@ -119,14 +95,69 @@ def index():
         # Render the site 
         return template('site.tpl', {'host': request.headers['Host'], 'messagetext': messagetext})
 
-@route("/ddns_oauth_code")
-def ddns_oauth_code():
+@route('/ddnscode', method='GET')
+def ddnscode():
+    # This only works for the ddns wesbsite over the supported protocol
+    if request.headers['Host'] != _dynamicdns_website or request.urlparts.scheme != _protocol:
+        return abort(404)
+
+    # Get the data from the URL
+    code = request.query.get('code')
+    domain = request.query.get('domain')
+    error = request.query.get('error')
+
+    if error != None and error != '':
+        return template('ddns_error',
+                {
+                    'error': 'Error returned from DNSProvider (' + error + ')'
+                })
+
+    # Return template
+    return template('ddns_oauth_code.tpl',
+                    {
+                        "oauth_code" : code,
+                        "domain" : domain
+                    })
+
+
+@route('/sig', method='GET')
+def sig():    
 
     # This only works for the hosting website over the supported protocol
     if request.headers['Host'] != _hosting_website or request.urlparts.scheme != _protocol:
         return abort(404)
-    
 
+    return template('sig.tpl')
+
+@route('/sig_verify', method='POST')
+def sig_verify():
+
+    # This only works for the hosting website over the supported protocol
+    if request.headers['Host'] != _hosting_website or request.urlparts.scheme != _protocol:
+        return abort(404)
+
+    # Get the domain/message and validate
+    domain = request.forms.get('domain')
+    key = request.forms.get('key')
+    sig = request.forms.get('sig')
+    qs = request.forms.get('qs')
+
+    try:
+        pub_key = _get_publickey(key + "." + domain)
+        verified = _verify_sig(pub_key, sig, qs)
+    except:
+        pub_key = None
+        verified = False
+
+    return template('sig_verify.tpl',
+		{
+                    'domain' : domain,
+                    'key': key,
+                    'sig': sig,
+                    'qs': qs,
+                    'verified': verified,
+                    'pubKey': pub_key
+                })                    
 
 @route('/sync', method='POST')
 def sync():
@@ -190,11 +221,6 @@ def sync():
     sigRedirect = _generate_sig(priv_key, qsRedirect)
     synchronousSignedRedirectUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qsRedirect + '&sig=' + urllib.quote(sigRedirect) + '&key=_dck1'
     
-    # For fun, verify the signatures.  Mostly to show how a DNS Provider would do this.
-    pub_key = _get_publickey('_dck1.' + _hosting_website)
-    verified = _verify_sig(pub_key, sig, qs)
-    verifiedRedirect = _verify_sig(pub_key, sigRedirect, qsRedirect)
-
     return template('sync.tpl',
 		{
                     'txt': txt,
@@ -207,13 +233,10 @@ def sync():
                     'synchronousSignedUrl2' : synchronousSignedUrl2,
                     'qs': qs,
                     'sig': sig,
-                    'verified': verified,
                     'synchronousRedirectUrl1' : synchronousRedirectUrl1, 
                     'synchronousSignedRedirectUrl2' : synchronousSignedRedirectUrl2,
                     'qsRedirect' : qsRedirect,
-                    'sigRedirect': sigRedirect,
-                    'verifiedRedirect': verifiedRedirect,
-                    'pubKey': pub_key
+                    'sigRedirect': sigRedirect
                 })                    
 
 @route('/sync_confirm', method='GET')

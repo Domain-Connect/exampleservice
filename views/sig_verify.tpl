@@ -2,11 +2,17 @@
 
 <h1>Signature Verification Test</h1>
 
+% if verified:
+<h1 style="color:green">Passed</h1>
+% else:
+<h1 style="color:red">Failed</h1>
+% end
+
 <h3>Domain</h3>
 {{domain}}
 
 <h3>Key</h3>
-{{pubKey}}
+{{key}}
 
 <h3>Sig</h3>
 {{sig}}
@@ -16,9 +22,6 @@
 
 <h3>Public Key</h3>
 {{pubKey}}
-
-<h3>Verified</h3>
-{{verified}}
 
 % include('footer.tpl')
 

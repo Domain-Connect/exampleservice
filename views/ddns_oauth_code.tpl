@@ -9,7 +9,7 @@
 </script>
 
 <h1>Access Granted</h1>
-Access has been granted to {{domain}}.
+Access has been granted.
 <br/><br/>
    
 Please copy the following code and enter it into the installer.

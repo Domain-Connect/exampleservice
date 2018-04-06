@@ -298,13 +298,15 @@ def async():
 
     # Right now the call to get a permission requires the template in the path. Doesn't matter which one.  Spec is updating to eliminate this
     asynchronousUrl = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '?' + \
-            'domain=' + domain + \
+            "domain=" + domain + \
+            "&host=" + hosts + \
             "&client_id=" + _provider + \
             "&scope=" + _template1 + ' ' + _template2 + \
             "&redirect_uri=" + urllib.quote(redirect_url)
 
     asynchronousUrl2 = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '?' + \
-            'domain=' + domain + \
+            "domain=" + domain + \
+            "&host=" + hosts + \
             "&client_id=" + _provider + \
             "&scope=" + _template1 + ' ' + _template2 + \
             "&redirect_uri=" + urllib.quote(redirect_url)

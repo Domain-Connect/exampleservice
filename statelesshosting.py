@@ -103,7 +103,6 @@ def ddnscode():
 
     # Get the data from the URL
     code = request.query.get('code')
-    domain = request.query.get('domain')
     error = request.query.get('error')
 
     if error != None and error != '':
@@ -115,8 +114,7 @@ def ddnscode():
     # Return template
     return template('ddns_oauth_code.tpl',
                     {
-                        "oauth_code" : code,
-                        "domain" : domain
+                        "oauth_code" : code
                     })
 
 

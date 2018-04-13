@@ -18,5 +18,5 @@ Please copy the following code and enter it into the installer.
 
 <button type="button" onclick="copy('code')" style="font-size: 25px">Copy to clipboard</button>
 
-% include('ddn_footer.tpl')
+% include('ddns_footer.tpl')
 

@@ -108,7 +108,7 @@ def ddnscode():
     if error != None and error != '':
         return template('ddns_error',
                 {
-                    'error': 'Error returned from DNSProvider (' + error + ')'
+                    'error': error
                 })
 
     # Return template

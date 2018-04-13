@@ -3,7 +3,7 @@
 <h1>Domain Connect DDNS Error</h1>
 An error occured.
 <p/>
-{{error}}
+Error returned: {{error}}
 
-% include('ddn_footer.tpl')
+% include('ddns_footer.tpl')
 

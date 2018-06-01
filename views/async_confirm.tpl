@@ -1,7 +1,9 @@
 % include('header.tpl', title='Asynchronous Configuration')
 
 <h1>Async Confirm</h1>
-An status of '{{status_code}}' was returned applying the template.
+A call to apply the template was made to: {{url}}
+<p/>
+A status of '{{status_code}}' was returned.
 <p/>
 % if status_code == '200':
   You've applied '{{applied_template}}' to '{{domain}}' 
@@ -12,7 +14,7 @@ An status of '{{status_code}}' was returned applying the template.
 % end
 
 <h1>Interesting information (read only):</h1>
-<table>
+<table border=1 cellpadding=3>
 <tr><td>Domain:</td><td>{{domain}}</td></tr>
 <tr><td>Hosts:</td><td>{{hosts}}</td></tr>
 <tr><td>DNS Provider:</td><td>{{dns_provider}}</td></tr>

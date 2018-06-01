@@ -373,6 +373,8 @@ def async_oauth_response():
         {
             "code": code, 
 
+            "url": url,
+
             "domain": domain, 
             "hosts" : hosts, 
             "dns_provider": dns_provider,
@@ -426,6 +428,7 @@ def async_confirm():
     # Return a page. Normally you would store the access and re-auth tokens and redirect the client browser
     return template('async_confirm.tpl', 
         {"applied_template": applied_template,
+         "url": url,
          "message" : message,
          "access_token" : access_token, 
          "domain": domain, 

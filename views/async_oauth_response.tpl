@@ -5,8 +5,9 @@ Access has been granted to {{domain}}.
 <br/><br/>
 
 <h1>Interesting information (read only):</h1>
-<table>
-<tr><td>oAuth Response Code from consent:</td><td>{{code}}</td></tr>
+<table border=1 cellpadding=3>
+<tr><td>oAuth&nbsp;Response&nbsp;Code&nbsp;from&nbsp;consent:</td><td>{{code}}</td></tr>
+<tr><td>URL to fetch access token</td><td>{{url}}</td</tr>
 <tr><td>JSON from Access Token Fetch</td><td>{{json_response}}</td></tr>
 <tr><td>Domain:</td><td>{{domain}}</td></tr>
 <tr><td>Hosts:</td><td>{{hosts}}</td></tr>

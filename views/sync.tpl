@@ -1,9 +1,17 @@
 % include('header.tpl', title='Configure Domain Connect')
 
 <h1>Provider Found: Your domain uses {{providerName}}</h1>
-The query for the _domainconnect TXT record returned: {{txt}}
+The query for the _domainconnect TXT record at {{domain}} returned: <b>{{txt}}</b>
 <p/>
-The json returned by https://{{txt}}/v2/{{domain}}/settings: {{json}}
+The json returned by https://{{txt}}/v2/{{domain}}/settings: <b>{{json}}</b>
+<p/>
+The query for support for template 1 at {{check_url1}} returned: <b>200 OK</b>
+<p/>
+The query for support for template 2 at {{check_url2}} returned: <b>200 OK</b>
+<p/>
+The URL for applying template 1: <b>{{synchronousUrl1}}</b>
+<p/>
+The URL for applying template 2: <b>{{synchronousSignedUrl2}}</b>
 
 <h2>New Tab</h2>
 <a target=_new href='{{synchronousUrl1}}'>Configure Template 1</a>

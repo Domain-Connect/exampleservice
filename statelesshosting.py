@@ -223,6 +223,8 @@ def sync():
 		{
                     'txt': txt,
                     'json': json.dumps(json_data),
+                    'check_url1' : check_url1,
+                    'check_url2' : check_url2,
                     'domain': domain,
                     'providerName' : json_data['providerName'], 
                     'width': width,
@@ -301,20 +303,22 @@ def async():
             "domain=" + domain + \
             "&host=" + hosts + \
             "&client_id=" + _provider + \
-            "&scope=" + _template1 + ' ' + _template2 + \
+            "&scope=" + _template1 + '+' + _template2 + \
             "&redirect_uri=" + urllib.quote(redirect_url)
 
     asynchronousUrl2 = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '?' + \
             "domain=" + domain + \
             "&host=" + hosts + \
             "&client_id=" + _provider + \
-            "&scope=" + _template1 + ' ' + _template2 + \
+            "&scope=" + _template1 + '+' + _template2 + \
             "&redirect_uri=" + urllib.quote(redirect_url)
 
     return template('async.tpl',
 		{
                     'txt': txt,
                     'json': json.dumps(json_data),
+                    'check_url1' : check_url1,
+                    'check_url2' : check_url2,
                     'domain': domain,
                     'providerName' : json_data['providerName'], 
                     'asynchronousUrl': asynchronousUrl,

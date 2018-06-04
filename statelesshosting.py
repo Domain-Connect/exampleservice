@@ -88,8 +88,12 @@ def index():
         # See if the text string was put into DNS
         messagetext = _get_messagetext(request.headers['Host'])
 
-        # We only render a site for domains that have been configured with a message
-        if messagetext == None or messagetext == '':
+        # If we haven't found a message, see if this is "whd" variant
+        if messagetext is None and request.headers['Host'].startswith('whd.'):
+            messagetext = _get_messagetext(request.header['Host'][4:])
+
+        # If we have no message, we must be done
+        if messagetext is None:
             return abort(404)
 
         # Render the site 

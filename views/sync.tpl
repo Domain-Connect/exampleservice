@@ -1,6 +1,6 @@
 % include('header.tpl', title='Configure Domain Connect')
 
-<h1>Provider Found: Your domain uses {{providerName}}</h1>
+<h2>Provider Found: Your domain uses {{providerName}}</h2>
 <table border=1 cellpadding=3>
 <tr><td>_domainconnect TXT record at {{domain}}</td><td>{{txt}}</td></tr>
 <tr><td>json returned by https://{{txt}}/v2/{{domain}}/settings</td><td>{{json}}</td></tr>

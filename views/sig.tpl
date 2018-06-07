@@ -42,7 +42,7 @@ function generate()
 	document.getElementById("output").innerHTML = result;
 }
 </script>
-Past the contents of the public key below. This is the base 64 content (not the -----BEGIN PUBLIC KEY----- or ----END PUBLIC KEY-----).
+Paste the contents of the public key below. This is the base 64 content (not the -----BEGIN PUBLIC KEY----- or ----END PUBLIC KEY-----).
 <p/>
 Note: No data is sent to the server
 <p/>

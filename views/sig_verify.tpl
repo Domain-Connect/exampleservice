@@ -20,7 +20,15 @@
 <h3>QS</h3>
 {{qs}}
 
+<h3>Public Key DNS Records</h3>
+
+% for record in record_strings:
+{{record}}
+<p/>
+%end
+
 <h3>Public Key</h3>
+
 {{pubKey}}
 
 % include('footer.tpl')

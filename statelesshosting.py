@@ -145,10 +145,11 @@ def sig_verify():
     qs = request.forms.get('qs')
 
     try:
-        pub_key = _get_publickey(key + "." + domain)
+        pub_key, record_strings = _get_publickey(key + "." + domain)
         verified = _verify_sig(pub_key, sig, qs)
     except:
         pub_key = None
+        record_strings = []
         verified = False
 
     return template('sig_verify.tpl',
@@ -158,7 +159,8 @@ def sig_verify():
                     'sig': sig,
                     'qs': qs,
                     'verified': verified,
-                    'pubKey': pub_key
+                    'pubKey': pub_key,
+                    'record_strings': record_strings
                 })                    
 
 @route('/sync', method='POST')
@@ -476,8 +478,10 @@ def _get_publickey(domain):
         publickey = '-----BEGIN PUBLIC KEY-----\n' # Key begins with prefix
 
         records = dns.resolver.query(domain, 'TXT') # Get all text records
+        record_strings = []
         for text in records:
-            split_text = text.strings[0].split(',') # Separate the index and key
+            record_strings.append(str(text))
+            split_text = text.strings[0].split(',') # Separate the components
             index = -1
             indexData = None
             for kv in split_text:
@@ -489,9 +493,9 @@ def _get_publickey(domain):
                 elif key == "d":
                     indexData = value
                 elif key == "a" and value.upper() != "RS256":
-                    return None
+                    return None, None
                 elif key == "t" and value.lower() != "x509":
-                    return None
+                    return None, None
 
             if index != -1 and indexData != None:
                 segments[index] = indexData
@@ -502,9 +506,9 @@ def _get_publickey(domain):
 
         publickey += '\n-----END PUBLIC KEY-----' # Add suffix
 
-        return publickey
+        return publickey, record_strings
     except:
-        return None
+        return None, None
 
 # Checks if the DNS Provider supports our template
 def _check_template(url):

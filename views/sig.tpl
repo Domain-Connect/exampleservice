@@ -19,5 +19,40 @@ The format of the public key in DNS can be found in the spec at: <a href="https:
 </table>
 </form>
 
+<h1>Public Key Generator</h1>
+
+<script>
+function generate()
+{
+	var text = document.getElementById("text").value;
+	var chunkSize = 200;
+	
+	var chunks = Math.ceil(text.length / chunkSize);
+	
+	var chunkId = 0;
+	
+	var result = "DNS TXT Records<p/>";
+	
+	for (var chunkId = 0; chunkId < chunks; chunkId++)
+	{
+		result = result + "p=" + String(chunkId + 1) + ",a=RS256,d=" + text.substring(chunkId * chunkSize, chunkId * chunkSize + chunkSize);
+		result = result + "<p/>";
+	}
+		       
+	document.getElementById("output").innerHTML = result;
+}
+</script>
+Past the contents of the public key below. This is the base 64 content (not the -----BEGIN PUBLIC KEY----- or ----END PUBLIC KEY-----).
+<p/>
+Note: No data is sent to the server
+<p/>
+<textarea id=text rows=5 cols=80>
+</textarea>
+<p/>
+<button name=Generate onclick="javascript:generate()">Generate</button>
+<p/>
+<span id=output>
+</span>
+
 % include('footer.tpl')
 

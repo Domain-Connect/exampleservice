@@ -8,6 +8,6 @@
 
 <a href="https://domainconnect.org"><img src="static/dclogo.png"></a>
 <br/>
-<a href="/">[Example Service Home]</a>&nbsp;&nbsp;<a href="/sig">[Signature Test]</a>
+<a href="/">[Example Service Home]</a>&nbsp;&nbsp;<a href="/sig">[Signature Tools]</a>
 <br/>
 

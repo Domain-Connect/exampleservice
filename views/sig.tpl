@@ -8,7 +8,7 @@ Singatures for synchronous templates are generated from the query string. The re
 The corresponding public key for the signature is published inside DNS. The zone is specified in the template in syncPubKeyDomain. The values are specified in TXT records in this zone. The host of these records is also appended to the querystring as key=&lt;value&gt;.
 <p/>
 The format of the public key in DNS can be found in the spec at: <a href="https://github.com/Domain-Connect/spec/blob/master/Domain%20Connect%20Spec%20Draft.adoc#digitally-sign-requests">https://github.com/Domain-Connect/spec/blob/master/Domain%20Connect%20Spec%20Draft.adoc#digitally-sign-requests</a>
-<p/
+<p/>
 <form method="post" action="sig_verify">
 <table>
 <tr><td>Domain:</td><td><input name="domain" type="text"></td></tr>

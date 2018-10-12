@@ -13,7 +13,7 @@
 <h2>New Tab</h2>
 <a target=_new href='{{synchronousUrl1}}'>Configure Template 1</a>
 <p/>
-<a target=_new href='{{synchronousSignedUrl2}}'>Configure Template 2 Synchronously with Signature Verification</a>
+<a target=_new href='{{synchronousSignedUrl2}}'>Configure Template 2 with Signature Verification</a>
 <form method="post" action="sig_verify">
 <input name="domain" type="hidden" value="exampleservice.domainconnect.org">
 <input name="key" type="hidden" value="_dck1">
@@ -25,7 +25,7 @@
 <h2>New Window</h2>
 <a target=_new href='javascript:null(void);' onclick='window.open("{{synchronousUrl1}}", "", "width={{width}},height={{height}}");'>Configure Template 1</a>
 <p/>
-<a target=_new href='javascript:null(void);' onclick='window.open("{{synchronousSignedUrl2}}", "", "width={{width}},height={{height}}");'>Configure Template 2 Synchronously with Signature Verification</a>
+<a target=_new href='javascript:null(void);' onclick='window.open("{{synchronousSignedUrl2}}", "", "width={{width}},height={{height}}");'>Configure Template 2 with Signature Verification</a>
 <form method="post" action="sig_verify">
 <input name="domain" type="hidden" value="exampleservice.domainconnect.org">
 <input name="key" type="hidden" value="_dck1">
@@ -37,7 +37,7 @@
 <h2>In Place w/ Redirect</h2>
 <a href='{{synchronousRedirectUrl1}}'>Configure Template 1</a>
 <p/>
-<a href='{{synchronousSignedRedirectUrl2}}'>Configure Template 2 Synchronously with Signature Verification</a>
+<a href='{{synchronousSignedRedirectUrl2}}'>Configure Template 2 with Signature Verification</a>
 <form method="post" action="sig_verify">
 <input name="domain" type="hidden" value="exampleservice.domainconnect.org">
 <input name="key" type="hidden" value="_dck1">

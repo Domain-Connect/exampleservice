@@ -305,14 +305,8 @@ def async():
     redirect_url = _protocol + "://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
 
     # Right now the call to get a permission requires the template in the path. Doesn't matter which one.  Spec is updating to eliminate this
-    asynchronousUrl = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '?' + \
-            "domain=" + domain + \
-            "&host=" + hosts + \
-            "&client_id=" + _provider + \
-            "&scope=" + _template1 + '+' + _template2 + \
-            "&redirect_uri=" + urllib.quote(redirect_url)
 
-    asynchronousUrl2 = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '?' + \
+    asynchronousUrl = json_data['urlAsyncUX'] + '/v2/domainTemplates/providers/' + _provider + '?' + \
             "domain=" + domain + \
             "&host=" + hosts + \
             "&client_id=" + _provider + \
@@ -327,8 +321,7 @@ def async():
                     'check_url2' : check_url2,
                     'domain': domain,
                     'providerName' : json_data['providerName'], 
-                    'asynchronousUrl': asynchronousUrl,
-                    'asynchronousUrl2' : asynchronousUrl2
+                    'asynchronousUrl': asynchronousUrl
                 })                    
                     
 # Handle the redirect back from the oAuth call

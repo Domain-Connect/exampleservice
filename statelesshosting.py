@@ -146,10 +146,13 @@ def sig_verify():
 
     try:
         pub_key, record_strings = _get_publickey(key + "." + domain)
-        verified = _verify_sig(pub_key, sig, qs)
     except:
         pub_key = None
         record_strings = []
+
+    try:
+        verified = _verify_sig(pub_key, sig, qs)
+    except:
         verified = False
 
     return template('sig_verify.tpl',

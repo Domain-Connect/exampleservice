@@ -213,29 +213,29 @@ def sync():
     secs = calendar.timegm(time.gmtime()) # Seconds since the epoch
 		
     # Generate the query string for synchronous calls
-    qs = 'domain=' + urllib.quote(domain) + '&RANDOMTEXT=' + urllib.quote('shm:' + str(secs) + ':' + message) + '&IP=' + urllib.quote(_ip)
+    qs = 'domain=' + urllib.quote(domain, '') + '&RANDOMTEXT=' + urllib.quote('shm:' + str(secs) + ':' + message, '') + '&IP=' + urllib.quote(_ip, '')
     if subdomain != '' and subdomain != None:
-        qs = qs + '&host=' + urllib.quote(subdomain)
+        qs = qs + '&host=' + urllib.quote(subdomain, '')
 
     # Create the URL to configure template 1
     synchronousUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?' + qs
 	
     # Create the URL to configure template2. Template 2 needs a singature
     sig = _generate_sig(priv_key, qs)
-    synchronousSignedUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qs + '&sig=' + urllib.quote(sig) + '&key=_dck1'
+    synchronousSignedUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qs + '&sig=' + urllib.quote(sig, '') + '&key=_dck1'
 
     # Generate the redirect uri
     redirect_uri = _protocol + "://" + _hosting_website + "/sync_confirm?domain=" + domain + "&subdomain=" + subdomain
 
     # Query string with the redirect
-    qsRedirect = qs + "&redirect_uri=" + urllib.quote(redirect_uri)
+    qsRedirect = qs + "&redirect_uri=" + urllib.quote(redirect_uri, '')
 
     # Create the URL to configure template 1 with a redirect back
     synchronousRedirectUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template1 + '/apply?' + qsRedirect
 
     # Create the URL to configure template 2 with a redirect back. Template 2 needs a signature
     sigRedirect = _generate_sig(priv_key, qsRedirect)
-    synchronousSignedRedirectUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qsRedirect + '&sig=' + urllib.quote(sigRedirect) + '&key=_dck1'
+    synchronousSignedRedirectUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + _provider + '/services/' + _template2 + '/apply?' + qsRedirect + '&sig=' + urllib.quote(sigRedirect, '') + '&key=_dck1'
     
     return template('sync.tpl',
 		{
@@ -323,7 +323,7 @@ def async():
             "&host=" + hosts + \
             "&client_id=" + _provider + \
             "&scope=" + _template1 + '+' + _template2 + \
-            "&redirect_uri=" + urllib.quote(redirect_url)
+            "&redirect_uri=" + urllib.quote(redirect_url, '')
 
     return template('async.tpl',
 		{
@@ -366,7 +366,7 @@ def async_oauth_response():
     redirect_url = _protocol + "://" + _hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
 
     # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
-    url = oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + urllib.quote(oAuthSecrets[dns_provider]) + "&redirect_uri=" + urllib.quote(redirect_url)
+    url = oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + _provider + "&client_secret=" + urllib.quote(oAuthSecrets[dns_provider], '') + "&redirect_uri=" + urllib.quote(redirect_url, '')
         
     # Call the oauth provider and get the access token
     r = requests.post(url, verify=True)

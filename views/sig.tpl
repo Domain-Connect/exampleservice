@@ -1,20 +1,35 @@
 % include('header.tpl', title='Signature Verification')
 
-<h1>Signature Verification Test</h1>
-This form can be used to test the Service Providers signature generation.
+<h1>Signatures</h1>
+Signatures are sometimes needed when using the sycnrhonous protocol. Signatures
+are needed if your
+template has variables that could be replaced by malicious values by a bad 
+actor (say a phising attack that replaces a host IP address with a bad one),
+or if you use redirects without a syncRedirectDomain in the template.
 <p/>
-Singatures for synchronous templates are generated from the query string. The resulting value is typically appeneded to the querystring as sig=&lt;value&gt;.
+If your template is static, and you specify a syncRedirectDomain, signatures
+aren't needed.
 <p/>
-The corresponding public key for the signature is published inside DNS. The zone is specified in the template in syncPubKeyDomain. The values are specified in TXT records in this zone. The host of these records is also appended to the querystring as key=&lt;value&gt;.
+Signatures are generated from a private key. The signature is based on the query string, properly URLEncoded, without the sig or key components.
+<p>
+The DNS Provider will verify the signature by fetching the public key from DNS.
+This is gotten by doing a query for TXT records in DNS at the host name
+specified in the query string as the key= value, in the domain specified by 
+syncPubKeyDomain in the template.
 <p/>
 The format of the public key in DNS can be found in the spec at: <a href="https://github.com/Domain-Connect/spec/blob/master/Domain%20Connect%20Spec%20Draft.adoc#digitally-sign-requests">https://github.com/Domain-Connect/spec/blob/master/Domain%20Connect%20Spec%20Draft.adoc#digitally-sign-requests</a>
 <p/>
-Input a domain name, and key for the TXT record to get the public key. Or input the public key.
+<h1>Test Form</h1>
+This form can test your signature generation.
+<p/>
+The public key will either fetch the public key from the DNS TXT Key/Domain,
+or if specified will use the Public Key (the contents of the key minus the --BEGIN/END--- blocks).
+<p/>
 <form method="post" action="sig_verify">
 <table>
-<tr><td>Domain:</td><td><input name="domain" type="text"></td></tr>
 <tr><td>DNS TXT Key:</td><td><input name="key" type="text"></td></tr>
-<tr><td>Public Key (optional):</td><td><input name="publickey" type="text"></td></tr>
+<tr><td>Domain:</td><td><input name="domain" type="text"></td></tr>
+<tr><td>Public Key:</td><td><input name="publickey" type="text"></td><br/></tr>
 <tr><td>Sig:</td><td><input name="sig" type="text"></td></tr>
 <tr><td>Query String:</td><td><input name="qs" type="text"></td></tr>
 <tr><td>&nbsp;</td><td><input type="submit" value="Verify Signature" /></td></tr>

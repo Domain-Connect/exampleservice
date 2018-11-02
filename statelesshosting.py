@@ -19,12 +19,14 @@ _ip = '132.148.25.185'
 
 # This is the host name of our application
 _hosting_website = 'exampleservice.domainconnect.org'
+#_hosting_website = 'footest.com:81'
 
 # This is the host name of the dynamic dns app (we sunck this in here here for convenience)
 _dynamicdns_website = 'dynamicdns.domainconnect.org'
 
 # Protocol for the app
 _protocol = 'https'
+#_protocol = 'http'
 
 # This is the private key used to generate signatures.
 #
@@ -141,13 +143,20 @@ def sig_verify():
     # Get the domain/message and validate
     domain = request.forms.get('domain')
     key = request.forms.get('key')
+    pub_key = request.forms.get('publickey')
+    if pub_key:
+        pub_key = pub_key.replace('\\n', '\n')
+        pub_key = '-----BEGIN PUBLIC KEY-----\n' + pub_key + '\n-----END PUBLIC KEY-----\n'
     sig = request.forms.get('sig')
     qs = request.forms.get('qs')
 
-    try:
-        pub_key, record_strings = _get_publickey(key + "." + domain)
-    except:
-        pub_key = None
+    if not pub_key:
+        try:
+            pub_key, record_strings = _get_publickey(key + "." + domain)
+        except:
+            pub_key = None
+            record_strings = []
+    else:
         record_strings = []
 
     try:
@@ -473,6 +482,8 @@ def _get_publickey(domain):
         segments = {}
         publickey = '-----BEGIN PUBLIC KEY-----\n' # Key begins with prefix
 
+        pembits = ''
+
         records = dns.resolver.query(domain, 'TXT') # Get all text records
         record_strings = []
         for text in records:
@@ -481,26 +492,35 @@ def _get_publickey(domain):
             index = -1
             indexData = None
             for kv in split_text:
-                parsed_kv = kv.split("=")
-                key = parsed_kv[0]
-                value = parsed_kv[1]
-                if key == "p":
-                    index = int(value)
-                elif key == "d":
-                    indexData = value
-                elif key == "a" and value.upper() != "RS256":
+                if kv.startswith('p='):
+                    index = int(kv[2:])
+                elif kv.startswith('d='):
+                    indexData = kv[2:]
+                elif kv.startswith('a=') and kv != 'a=RS256':
                     return None, None
-                elif key == "t" and value.lower() != "x509":
+                elif kv.startswith('t=') and kv != 't=x509':
                     return None, None
 
             if index != -1 and indexData != None:
                 segments[index] = indexData
-        
+
         # Concatenate all of the key segments
         for key in sorted(segments.iterkeys()):
-            publickey = publickey + segments[key]
+            pembits = pembits + segments[key].strip('\n').strip('\\n').strip()
+            
 
-        publickey += '\n-----END PUBLIC KEY-----' # Add suffix
+        # Now get the real body
+        finalbits = ''
+        chunks = len(pembits)/64
+        for x in range(chunks):
+            finalbits = finalbits + pembits[x*64:(x+1)*64] + '\n'
+        if len(pembits) > chunks *64:
+            finalbits = finalbits + pembits[chunks*64:] + '\n'
+
+        publickey = publickey + finalbits
+            
+
+        publickey += '-----END PUBLIC KEY-----\n' # Add suffix
 
         return publickey, record_strings
     except:
@@ -580,5 +600,5 @@ def send_static(filename):
 
 # Runs the application for all hosts
 if __name__ == "__main__":
-    run(host='0.0.0.0', port=80, debug=True)
+    run(host='0.0.0.0', port=81, debug=True)
 

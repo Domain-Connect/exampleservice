@@ -9,10 +9,12 @@ The corresponding public key for the signature is published inside DNS. The zone
 <p/>
 The format of the public key in DNS can be found in the spec at: <a href="https://github.com/Domain-Connect/spec/blob/master/Domain%20Connect%20Spec%20Draft.adoc#digitally-sign-requests">https://github.com/Domain-Connect/spec/blob/master/Domain%20Connect%20Spec%20Draft.adoc#digitally-sign-requests</a>
 <p/>
+Input a domain name, and key for the TXT record to get the public key. Or input the public key.
 <form method="post" action="sig_verify">
 <table>
 <tr><td>Domain:</td><td><input name="domain" type="text"></td></tr>
-<tr><td>Key:</td><td><input name="key" type="text"></td></tr>
+<tr><td>DNS TXT Key:</td><td><input name="key" type="text"></td></tr>
+<tr><td>Public Key (optional):</td><td><input name="publickey" type="text"></td></tr>
 <tr><td>Sig:</td><td><input name="sig" type="text"></td></tr>
 <tr><td>Query String:</td><td><input name="qs" type="text"></td></tr>
 <tr><td>&nbsp;</td><td><input type="submit" value="Verify Signature" /></td></tr>

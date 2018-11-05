@@ -22,8 +22,10 @@
 
 <h3>Public Key DNS Records</h3>
 
+% if record_strings:
 % for record in record_strings:
 {{record}}
+% end
 <p/>
 %end
 

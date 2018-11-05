@@ -42,6 +42,7 @@ or if specified will use the Public Key (the contents of the key minus the --BEG
 function generate()
 {
 	var text = document.getElementById("text").value;
+	text = text.replace(/\s/g, "");
 	var chunkSize = 200;
 	
 	var chunks = Math.ceil(text.length / chunkSize);
@@ -52,8 +53,9 @@ function generate()
 	
 	for (var chunkId = 0; chunkId < chunks; chunkId++)
 	{
+		result = result + "<p style='white-space:nowrap'>";
 		result = result + "p=" + String(chunkId + 1) + ",a=RS256,d=" + text.substring(chunkId * chunkSize, chunkId * chunkSize + chunkSize);
-		result = result + "<p/>";
+		result = result + "</p>";
 	}
 		       
 	document.getElementById("output").innerHTML = result;

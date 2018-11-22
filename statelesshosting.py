@@ -551,6 +551,11 @@ def _get_domainconnect_json(domain):
         # Form the URL to get the json and fetch it
         url = 'https://' + host + '/v2/' + domain + '/settings'
         r = requests.get(url, verify=False)
+
+        # Remember that the json might fail if the provider from the DNS TXT record doesn't contain the zone
+        if r.status_code != 200:
+            return None, None
+
         return r.json(), host
 
     except:

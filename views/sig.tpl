@@ -77,6 +77,19 @@ public key, you provide the Host (normally passed as key=&lt;value&gt; on the qu
 </table>
 </form>
 
+<h1>Verifying the Signature from the URL sent to the DNS Provider</h1>
+This form isn't that different than the previous. Except here you provide the URL are sending the DNS Provider and the Domain 
+(normally the syncPubKeyDomain in the template). The code will grab the components out of the URL and verify the signature.
+
+<p/>
+<form method="post" action="sig_verify_url">
+<table>
+<tr><td>URL:</td><td><input name="url" type="text"></td></tr>
+<tr><td>Domain (syncPubKeyDomain):</td><td><input name="domain" type="text"></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="Verify Signature" /></td></tr>
+</table>
+</form>
+
 <h1>Publishing the Public Key in DNS</h1>
 
 <script>

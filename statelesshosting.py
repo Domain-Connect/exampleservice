@@ -9,6 +9,7 @@ from base64 import b64decode, b64encode,urlsafe_b64decode,b16encode
 import requests
 import json
 import urllib
+import urlparse
 import re
 import time
 import calendar
@@ -229,6 +230,56 @@ def sig_verify():
                     'pubKey': pub,
                     'record_strings': record_strings
                 })                    
+
+@route('/sig_verify_url', method='POST')
+def sig_verify_url():
+
+    # This only works for the hosting website over the supported protocol
+    if request.headers['Host'] != _hosting_website or request.urlparts.scheme != _protocol:
+        return abort(404)
+
+    # Get the domain/message and validate
+    url = request.forms.get('url')
+    domain = request.forms.get('domain')
+
+    params = urlparse.urlparse(url).query.split('&')
+    sig = None
+    key = None
+    qs = None
+    for param in params:
+        if param.startswith('sig='):
+            sig = urllib.unquote(param[4:])
+        elif param.startswith('key='):
+            key = urllib.unquote(param[4:])
+        else:
+            if not qs:
+                qs = param
+            else:
+                qs = qs + '&' + param
+
+    try:
+        pub, record_strings = _get_publickey(key + "." + domain)
+        pub = '-----BEGIN PUBLIC KEY-----\n' + pub + '\n-----END PUBLIC KEY-----\n'
+    except:
+        pub = None
+        record_strings = []
+
+    try:
+        verified = _verify_sig(pub, sig, qs)
+    except:
+        verified = False
+
+    return template('sig_verify.tpl',
+		{
+                    'domain' : domain,
+                    'key': key,
+                    'sig': sig,
+                    'qs': qs,
+                    'verified': verified,
+                    'pubKey': pub,
+                    'record_strings': record_strings
+                })                    
+
 
 @route('/sync', method='POST')
 def sync():

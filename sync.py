@@ -4,6 +4,7 @@ import urllib
 
 import config
 import util
+import sigutil
 import json
 
 @route('/sync_index', method='GET')
@@ -57,7 +58,7 @@ def sync_post():
     synchronousUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + config.provider + '/services/' + config.template1 + '/apply?' + qs
 	
     # Create the URL to configure template2. Template 2 needs a singature
-    sig = util.generate_sig(config.priv_key, qs)
+    sig = sigutil.generate_sig(config.priv_key, qs)
     synchronousSignedUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + config.provider + '/services/' + config.template2 + '/apply?' + qs + '&sig=' + urllib.quote(sig, '') + '&key=_dck1'
 
     # Generate the redirect uri
@@ -70,7 +71,7 @@ def sync_post():
     synchronousRedirectUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + config.provider + '/services/' + config.template1 + '/apply?' + qsRedirect
 
     # Create the URL to configure template 2 with a redirect back. Template 2 needs a signature
-    sigRedirect = util.generate_sig(config.priv_key, qsRedirect)
+    sigRedirect = sigutil.generate_sig(config.priv_key, qsRedirect)
     synchronousSignedRedirectUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + config.provider + '/services/' + config.template2 + '/apply?' + qsRedirect + '&sig=' + urllib.quote(sigRedirect, '') + '&key=_dck1'
     
     return template('sync_post.tpl',

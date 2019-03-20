@@ -3,14 +3,14 @@
 ip = '132.148.25.185'
 
 # This is the host name of our application
-hosting_website = 'exampleservice.domainconnect.org:81'
+hosting_website = 'exampleservice.domainconnect.org'
 #hosting_website = 'footest.com:81'
 
 # This is the host name of the dynamic dns app (we sunck this in here here for convenience)
 dynamicdns_website = 'dynamicdns.domainconnect.org'
 
 # Protocol for the app
-protocol = 'http'
+protocol = 'https'
 #protocol = 'http'
 
 # This is the private key used to generate signatures.

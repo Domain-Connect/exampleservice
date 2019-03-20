@@ -8,6 +8,7 @@ import urllib
 import urlparse
 
 import util
+import sigutil
 import config
 
 @route('/sig', method='GET')
@@ -89,7 +90,7 @@ def sig_verify():
 
     if not pub:
         try:
-            pub, record_strings = util.get_publickey(key + "." + domain)
+            pub, record_strings = sigutil.get_publickey(key + "." + domain)
             pub = '-----BEGIN PUBLIC KEY-----\n' + pub + '\n-----END PUBLIC KEY-----\n'
         except:
             pub = None
@@ -98,7 +99,7 @@ def sig_verify():
         record_strings = []
 
     try:
-        verified = util.verify_sig(pub, sig, qs)
+        verified = sigutil.verify_sig(pub, sig, qs)
     except:
         verified = False
 
@@ -147,7 +148,7 @@ def sig_verify_url():
         record_strings = []
 
     try:
-        verified = util.verify_sig(pub, sig, qs)
+        verified = sigutil.verify_sig(pub, sig, qs)
     except:
         verified = False
 

@@ -1,32 +1,46 @@
 from dns.resolver import dns
 
-from Crypto.PublicKey import RSA
-from Crypto.Signature import PKCS1_v1_5
-from Crypto.Hash import SHA256
-from base64 import b64decode, b64encode,urlsafe_b64decode,b16encode
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
 
-# Generates a signature on the passed in data		
-def generate_sig(private_key, data):
+from base64 import b64decode, b64encode
 
-    rsakey = RSA.importKey(private_key)
-    signer = PKCS1_v1_5.new(rsakey)
-    digest = SHA256.new()
-    digest.update(data)
-
-    return b64encode(signer.sign(digest))
-
-# Verifies a sinature
 def verify_sig(public_key, signature, data):
+    try:
+        pk = serialization.load_pem_public_key(
+            public_key,
+            backend=default_backend()
+        )
 
-    rsakey = RSA.importKey(public_key)
-    signer = PKCS1_v1_5.new(rsakey)
-    digest = SHA256.new()
-    digest.update(data)
+        pk.verify(b64decode(signature),
+                  data,
+                  padding.PKCS1v15(),
+                  hashes.SHA256()
+        )
 
-    if signer.verify(digest, b64decode(signature)):
         return True
 
-    return False
+    except:
+        return False
+
+# Generates a signature on the passed in data
+def generate_sig(private_key, data):
+
+    pk = serialization.load_pem_private_key(
+        private_key,
+        password=None,
+        backend=default_backend()
+        )
+
+    sig = pk.sign(
+        data,
+        padding.PKCS1v15(),
+        hashes.SHA256()
+    )
+
+    return b64encode(sig)
 
 # Get TXT records and parse them for the public key
 def get_publickey(domain):

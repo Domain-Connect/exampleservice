@@ -11,7 +11,7 @@ dynamicdns_website = 'dynamicdns.domainconnect.org'
 
 # Protocol for the app
 protocol = 'https'
-#protocol = 'http'
+
 
 # This is the private key used to generate signatures.
 #

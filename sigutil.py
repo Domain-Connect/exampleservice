@@ -30,6 +30,7 @@ def verify_sig(public_key, signature, data):
 
 # Get TXT records and parse them for the public key
 def get_publickey(domain):
+    try:
         segments = {}
 
         pembits = ''
@@ -59,5 +60,7 @@ def get_publickey(domain):
             pembits = pembits + segments[key].strip('\n').strip('\\n').strip()
             
         return pembits, record_strings
+    except:
+        return None
 
 

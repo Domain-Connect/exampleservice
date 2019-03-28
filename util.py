@@ -66,7 +66,7 @@ def check_template(url):
 # Checks if the DNS Provider supports Domain Connect
 def get_domainconnect_json(domain):
 
-    
+    try:
         # Get the txt record for domain connect from the domain
         answers = dns.resolver.query('_domainconnect.' + domain, 'TXT')
         if len(answers) != 1:
@@ -84,5 +84,7 @@ def get_domainconnect_json(domain):
             return None, None
 
         return r.json(), host
+    except:
+        return None, None
 
     

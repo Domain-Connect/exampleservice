@@ -8,7 +8,7 @@ Query for the _domainconnect TXT record at {{domain}}:
 <p style="font-family:courier; word-break:break-all">{{txt}}</p>
 
 <h4>Step 2</h4>
-json returned by https://{{txt}}/v2/{{domain}}/settings:
+Calling URL https://{{txt}}/v2/{{domain}}/settings:
 <p/>
 <pre style="font-family:Courier" id="json"></pre>
 <script>document.getElementById("json").innerHTML = JSON.stringify({{!json}}, undefined, 2);</script>
@@ -19,6 +19,13 @@ URLs to query for support of templates:
 <p style="font-family:courier; word-break:break-all">{{check_url1}}</p>
 <p/>
 <p style="font-family:courier; word-break:break-all">{{check_url2}}</p>
+
+<h4>Step 4</h4>
+URL to call domain connect for template 1
+
+<pre style="font-family:courier; word-break:break-all">
+{{synchronousUrl1}}
+</pre>
 
 <h2>Next Step</h2>
 <h4>New Tab</h4>

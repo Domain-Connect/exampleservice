@@ -20,14 +20,19 @@ URLs to query for support of templates:
 <p/>
 <p style="font-family:courier; word-break:break-all">{{check_url2}}</p>
 
+<h4>Step 4<h4>
+URL to call and start oAuth process
+
+<pre style=font-family:courier; word-break:break-all">
+{{asynchronousUrl}}
+</pre>
+
 <h2>Next Step</h2>
 
-URL for getting oAuth permission:
-<p/>
+
 <p style="font-family:courier; word-break:break-all">{{asynchronousUrl}}</p>
 <p/>
-Provider Found: Your domain uses {{providerName}}. The following URL will
-ask for permissions to apply template1 and template2 on {{domain}} with hosts [{{hosts}}].
+Provider Found: Your domain uses {{providerName}}. 
 <p/>
 <a href='{{asynchronousUrl}}'>Get Asynchronous Permission</a>
 

@@ -1,0 +1,16 @@
+-i https://pypi.org/simple
+asn1crypto==0.24.0
+bottle==0.12.16
+certifi==2019.3.9
+cffi==1.12.3
+chardet==3.0.4
+cryptography==2.6.1
+dnspython==1.16.0
+enum34==1.1.6 ; python_version < '3'
+idna==2.8
+ipaddress==1.0.22 ; python_version < '3'
+pycparser==2.19
+pycrypto==2.6.1
+requests==2.21.0
+six==1.12.0
+urllib3==1.24.2

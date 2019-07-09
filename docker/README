@@ -1,6 +1,13 @@
-README
+# Run the example service locally with the help of Docker.
 
-# docker-compose run --rm domainconnect
-# docker-compose up
-# docker-compose run --rm domainconnect bash
+# To build the docker containers
+docker-compose build
+
+# To start the containers
+docker-compose up
+
+# To log into bash shell in the python web app container
+docker-compose run web bash
+
+# To stop the containers
 docker-compose down

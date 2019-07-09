@@ -1,14 +1,5 @@
 version: '2.1'
 
-# To build the docker containers
-# docker-compose build
-
-# To start the containers
-# docker-compose up
-
-# To log into bash shell in the python web app container
-# docker-compose run web bash
-
 services:
  web:
    build: 

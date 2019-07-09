@@ -2,6 +2,9 @@ FROM python:2.7
 
 RUN pip install --upgrade pip
 
-RUN pip install uwsgi bottle dnspython pycrypto requests
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+RUN pip install uwsgi
 
 WORKDIR /workspace

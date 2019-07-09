@@ -1,9 +1,13 @@
 version: '2.1'
 
-# docker-compose build domainconnect
-# docker-compose run --rm domainconnect
+# To build the docker containers
+# docker-compose build
+
+# To start the containers
 # docker-compose up
-# docker-compose run --rm domainconnect bash
+
+# To log into bash shell in the python web app container
+# docker-compose run web bash
 
 services:
  web:
@@ -13,7 +17,11 @@ services:
    volumes:
      - .:/workspace/
    command: "uwsgi docker/uwsgi.ini"
- 
+   environment:
+     - APP_DOMAIN=exampleservice.domainconnect.local
+     - APP_PROTOCOL=http
+     - APP_IP=0.0.0.0
+
  nginx:
    image: nginx:latest
    ports:

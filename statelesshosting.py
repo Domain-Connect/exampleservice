@@ -15,16 +15,16 @@ import calendar
 
 # This is the IP address of the server running this code. You can run the
 # sample on localhost, but you'll need to edit your host file
-_ip = '132.148.25.185'
+_ip = '0.0.0.0'
 
 # This is the host name of our application
-_hosting_website = 'exampleservice.domainconnect.org'
+_hosting_website = 'exampleservice.domainconnect.local'
 
 # This is the host name of the dynamic dns app (we sunck this in here here for convenience)
 _dynamicdns_website = 'dynamicdns.domainconnect.org'
 
 # Protocol for the app
-_protocol = 'https'
+_protocol = 'http'
 
 # This is the private key used to generate signatures.
 #
@@ -66,7 +66,7 @@ oAuthAPIURLs = {
     '1and1' : 'https://api.domainconnect.1and1.com'
 }
 
-app = default_app()
+app = application = default_app()
 
 # Handle the home page. This can be rendered for the service, or the individual sites
 @route('/')
@@ -581,4 +581,3 @@ def send_static(filename):
 # Runs the application for all hosts
 if __name__ == "__main__":
     run(host='0.0.0.0', port=80, debug=True)
-

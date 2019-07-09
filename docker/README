@@ -1,0 +1,6 @@
+README
+
+# docker-compose run --rm domainconnect
+# docker-compose up
+# docker-compose run --rm domainconnect bash
+docker-compose down

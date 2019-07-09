@@ -1,0 +1,10 @@
+server {
+    server_name exampleservice.domainconnect.local;
+    listen 80;
+
+    location / {
+        root   /workspace;
+        proxy_pass http://web:8125;
+        proxy_set_header Host $host;
+    }
+}

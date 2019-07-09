@@ -12,6 +12,8 @@ services:
      - APP_DOMAIN=exampleservice.domainconnect.local
      - APP_PROTOCOL=http
      - APP_IP=0.0.0.0
+   dns:
+     - 8.8.8.8
 
  nginx:
    image: nginx:latest

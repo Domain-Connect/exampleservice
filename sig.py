@@ -37,7 +37,7 @@ def sig_generate():
     else:
         priv = config.priv_key
 
-    sig = util.generate_sig(priv, qs)
+    sig = sigutil.generate_sig(priv, qs)
 
     return template('sig_generate.tpl',
                     {

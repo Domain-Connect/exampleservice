@@ -48,4 +48,4 @@ def send_static(filename):
 
 # Runs the application for all hosts
 if __name__ == "__main__":
-    run(host='0.0.0.0', port=80, debug=True)
+    run(host='0.0.0.0', port=81, debug=True)

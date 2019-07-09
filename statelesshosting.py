@@ -10,7 +10,7 @@ from ddns import *
 from sync import *
 from async import *
 
-app = default_app()
+app = application = default_app()
 
 @route('/')
 def index():

@@ -1,0 +1,13 @@
+# Run the example service locally with the help of Docker.
+
+# To build the docker containers
+docker-compose build
+
+# To start the containers
+docker-compose up
+
+# To log into bash shell in the python web app container
+docker-compose run web bash
+
+# To stop the containers
+docker-compose down

@@ -28,6 +28,10 @@ Then use the command "run_all()". This will run the bottle development server on
 
 This application runs at exampleservice.domainconnect.org.
 
+# Run locally
+
 You can also run this application locally on your own box in a simple bottle server.  Just sudo python statelesshosting.py.
 
 One caveat: you'll need to modify your local hosts file so exampleservice.domainconnect.org resolves to your own localhost.
+
+Also see instructions on running in [Docker](docker/README.md).

@@ -37,7 +37,7 @@ def sig_generate():
     else:
         priv = config.priv_key
 
-    sig = util.generate_sig(priv, qs)
+    sig = sigutil.generate_sig(priv, qs)
 
     return template('sig_generate.tpl',
                     {
@@ -55,7 +55,7 @@ def sig_fetch():
     key = request.forms.get('key')
 
     try:
-        pub_key, record_strings = util.get_publickey(key + "." + domain)
+        pub_key, record_strings = sigutil.get_publickey(key + "." + domain)
         pub_key = '-----BEGIN PUBLIC KEY-----\n' + pub_key + '\n-----END PUBLIC KEY-----\n'
     except:
         pub_key = None
@@ -141,7 +141,7 @@ def sig_verify_url():
                 qs = qs + '&' + param
 
     try:
-        pub, record_strings = util.get_publickey(key + "." + domain)
+        pub, record_strings = sigutil.get_publickey(key + "." + domain)
         pub = '-----BEGIN PUBLIC KEY-----\n' + pub + '\n-----END PUBLIC KEY-----\n'
     except:
         pub = None

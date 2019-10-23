@@ -75,6 +75,6 @@ def get_publickey(domain):
             
         return pembits, record_strings
     except:
-        return None
+        return None, None
 
 

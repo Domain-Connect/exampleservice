@@ -1,0 +1,23 @@
+version: '2.1'
+
+services:
+ web:
+   build: 
+     context: .
+     dockerfile: docker/Dockerfile-web
+   volumes:
+     - .:/workspace/
+   command: "uwsgi docker/uwsgi.ini"
+   environment:
+     - APP_DOMAIN=exampleservice.domainconnect.local
+     - APP_PROTOCOL=http
+     - APP_IP=0.0.0.0
+
+ nginx:
+   image: nginx:latest
+   ports:
+     - "8001:80"
+   volumes:
+     - ./docker/exampleservice.domainconnect.local:/etc/nginx/conf.d/exampleservice.domainconnect.local.conf
+   depends_on:
+     - web

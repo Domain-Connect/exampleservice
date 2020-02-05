@@ -26,9 +26,9 @@ def async_post():
         return template('invalid_data.tpl')
 
     # See if the DNS Provider supports domain connect
-    json_data, txt = util.get_domainconnect_json(domain)
+    json_data, txt, message = util.get_domainconnect_json(domain)
     if json_data == None:
-        return template('no_domain_connect.tpl', {'reason' : 'Unable to read configuration'})
+        return template('no_domain_connect.tpl', {'reason' : message})
 
     # Get the provider name
     dns_provider = json_data['providerName']
@@ -40,7 +40,7 @@ def async_post():
         return template('no_domain_connect.tpl', {'reason' : 'Missing template support'})
 
     # Verify that the provider supports async
-    if not config.oAuthSecrets.has_key(dns_provider) or not config.oAuthAPIURLs.has_key(dns_provider) or config.oAuthAPIURLs[dns_provider] != json_data['urlAPI']:
+    if not dns_provider in config.oAuthSecrets or not dns_provider in config.oAuthAPIURLs or config.oAuthAPIURLs[dns_provider] != json_data['urlAPI']:
         return template('no_domain_connect.tpl', {'reason' : 'Not onboarded as oAuth provider'})
 
     # The redirect_url is part of oAuth and where the user will be sent after consent. Appended to this URL will be the OAuth code or an error
@@ -53,7 +53,7 @@ def async_post():
             "&host=" + hosts + \
             "&client_id=" + config.provider + \
             "&scope=" + config.template1 + '+' + config.template2 + \
-            "&redirect_uri=" + urllib.quote(redirect_url, '')
+            "&redirect_uri=" + urllib.parse.quote(redirect_url, '')
 
     return template('async_post.tpl',
 		{
@@ -97,7 +97,7 @@ def async_oauth_response():
     redirect_url = config.protocol + "://" + config.hosting_website + "/async_oauth_response?domain=" + domain + "&hosts=" + hosts + "&dns_provider=" + dns_provider
 
     # Take the oauth code and get an access token. This must be done fairly quickly as oauth codes have a short expiry
-    url = config.oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + config.provider + "&client_secret=" + urllib.quote(config.oAuthSecrets[dns_provider], '') + "&redirect_uri=" + urllib.quote(redirect_url, '')
+    url = config.oAuthAPIURLs[dns_provider] + "/v2/oauth/access_token?code=" + code + "&grant_type=authorization_code&client_id=" + config.provider + "&client_secret=" + urllib.parse.quote(config.oAuthSecrets[dns_provider], '') + "&redirect_uri=" + urllib.parse.quote(redirect_url, '')
         
     # Call the oauth provider and get the access token
     r = requests.post(url, verify=True)

@@ -9,6 +9,9 @@ from base64 import b64decode, b64encode
 
 def verify_sig(public_key, signature, data):
     try:
+        public_key = public_key.encode('ascii')
+        data = data.encode()
+
         pk = serialization.load_pem_public_key(
             public_key,
             backend=default_backend()
@@ -28,32 +31,37 @@ def verify_sig(public_key, signature, data):
 # Generates a signature on the passed in data
 def generate_sig(private_key, data):
 
-    pk = serialization.load_pem_private_key(
-        private_key,
-        password=None,
-        backend=default_backend()
+    try:
+        private_key = private_key.encode('ascii')
+        data = data.encode()
+
+        pk = serialization.load_pem_private_key(
+            private_key,
+            password=None,
+            backend=default_backend()
         )
 
-    sig = pk.sign(
-        data,
-        padding.PKCS1v15(),
-        hashes.SHA256()
-    )
+        sig = pk.sign(
+            data,
+            padding.PKCS1v15(),
+            hashes.SHA256()
+        )
 
-    return b64encode(sig)
+        return b64encode(sig)
+    except:
+        return None
 
 # Get TXT records and parse them for the public key
 def get_publickey(domain):
     try:
         segments = {}
 
-        pembits = ''
-
         records = dns.resolver.query(domain, 'TXT') # Get all text records
         record_strings = []
         for text in records:
-            record_strings.append(str(text))
-            split_text = text.strings[0].split(',') # Separate the components
+            text = text.strings[0].decode('utf-8')
+            record_strings.append(text)
+            split_text = text.split(',') # Separate the components
             index = -1
             indexData = None
             for kv in split_text:
@@ -69,8 +77,10 @@ def get_publickey(domain):
             if index != -1 and indexData != None:
                 segments[index] = indexData
 
+        pembits = ''
+
         # Concatenate all of the key segments
-        for key in sorted(segments.iterkeys()):
+        for key in sorted(list(segments.keys())):
             pembits = pembits + segments[key].strip('\n').strip('\\n').strip()
             
         return pembits, record_strings

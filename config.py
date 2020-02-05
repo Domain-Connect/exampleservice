@@ -6,13 +6,14 @@ ip = os.getenv('APP_IP', '132.148.25.185')
 
 # This is the host name of our application
 hosting_website = os.getenv('APP_DOMAIN', 'exampleservice.domainconnect.org')
-#hosting_website = 'footest.com:81'
+#hosting_website = 'exampleservice.domainconnect.org:81'
 
 # This is the host name of the dynamic dns app (we sunck this in here here for convenience)
 dynamicdns_website = 'dynamicdns.domainconnect.org'
 
 # Protocol for the app
 protocol = os.getenv('APP_PROTOCOL', 'https')
+#protocol = os.getenv('APP_PROTOCOL', 'http')
 
 
 # This is the private key used to generate signatures.

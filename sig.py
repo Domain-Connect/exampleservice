@@ -5,7 +5,7 @@
 from bottle import Bottle, run, route, template, request, response, abort, static_file, default_app, redirect
 
 import urllib
-import urlparse
+#import urlparse
 
 import util
 import sigutil
@@ -125,7 +125,8 @@ def sig_verify_url():
     url = request.forms.get('url')
     domain = request.forms.get('domain')
 
-    params = urlparse.urlparse(url).query.split('&')
+    #params = urlparse.urlparse(url).query.split('&')
+    params = urllib.parse(url).query.split('&')
     sig = None
     key = None
     qs = None

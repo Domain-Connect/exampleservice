@@ -7,7 +7,7 @@
 
 from bottle import Bottle, run, route, template, request, response, abort, static_file, default_app, redirect
 
-import urllib
+import urllib.parse
 
 import config
 import util
@@ -31,16 +31,16 @@ def simple_post():
         return template('invalid_data.tpl')
 
     # See if the DNS Provider supports domain connect
-    json_data, txt = util.get_domainconnect_json(domain)
+    json_data, txt, message = util.get_domainconnect_json(domain)
     if json_data == None:
-        return template('no_domain_connect.tpl', {'reason' : 'Unable to read configuration'})
+        return template('no_domain_connect.tpl', {'reason' : message})
 
     width = 750
-    if json_data.has_key('width'):
+    if 'width' in json_data:
         width = json_data['width']
 
     height = 750
-    if json_data.has_key('height'):
+    if 'height' in json_data:
         height =json_data['height']
     
     # See if our template is supported
@@ -51,9 +51,9 @@ def simple_post():
     dns_message_data = util.dns_message_data(message)
 		
     # Generate the query string for synchronous calls
-    qs = 'domain=' + urllib.quote(domain, '') + '&RANDOMTEXT=' + urllib.quote(dns_message_data) + '&IP=' + urllib.quote(config.ip, '')
+    qs = 'domain=' + urllib.parse.quote(domain, '') + '&RANDOMTEXT=' + urllib.parse.quote(dns_message_data) + '&IP=' + urllib.parse.quote(config.ip, '')
     if subdomain != '' and subdomain != None:
-        qs = qs + '&host=' + urllib.quote(subdomain, '')
+        qs = qs + '&host=' + urllib.parse.quote(subdomain, '')
 
     # Create the URL to configure template 1
     synchronousUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + config.provider + '/services/' + config.template1 + '/apply?' + qs

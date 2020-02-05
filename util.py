@@ -1,4 +1,4 @@
-import dns
+import dns.resolver
 
 import re
 
@@ -63,28 +63,45 @@ def check_template(url):
     except:
         return False
     
+    
 # Checks if the DNS Provider supports Domain Connect
 def get_domainconnect_json(domain):
 
-    try:
-        # Get the txt record for domain connect from the domain
-        answers = dns.resolver.query('_domainconnect.' + domain, 'TXT')
-        if len(answers) != 1:
-            return None, None
+  try:
 
-        # Get the value to do the json call
-        host = answers[0].strings[0]
+    # Get the txt record for domain connect from the domain
+    answers = dns.resolver.query('_domainconnect.' + domain, 'TXT')
+    if len(answers) != 1:
+        return None, None, 'No _domainconnect TXT record'
 
-        # Form the URL to get the json and fetch it
-        url = 'https://' + host + '/v2/' + domain + '/settings'
-        r = requests.get(url, verify=False)
+    # Get the value to do the json call
+    host = answers[0].strings[0].decode('utf-8')
 
-        # Remember that the json might fail if the provider from the DNS TXT record doesn't contain the zone
-        if r.status_code != 200:
-            return None, None
+    # Form the URL to get the json and fetch it
+    url = 'https://' + host + '/v2/' + domain + '/settings'
+    r = requests.get(url, verify=False)
 
-        return r.json(), host
-    except:
-        return None, None
+    # Remember that the json might fail if the provider from the DNS TXT record doesn't contain the zone
+    if r.status_code != 200:
+        return None, None, 'No json returned for /settings'
+
+    # Get the json
+    json_data = r.json()
+
+    # If the provider returned nameservers, verify that they are athoritative
+    if 'nameServers' in json_data:
+        answers = dns.resolver.query(domain, 'NS')
+        if len(answers) == 0:
+            return None, None, 'No nameservers found'
+        authoritative = str(answers[0])
+        if authoritative.endswith('.'):
+            authoritative = authoritative[:-1]
+        if len(answers) == 0 or authoritative not in json_data['nameServers']:
+            return None, None, 'Nameservers not authoritative'
+
+    return json_data, host
+
+  except:
+    return None, None, 'Internal error'
 
     

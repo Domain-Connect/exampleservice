@@ -99,7 +99,7 @@ def get_domainconnect_json(domain):
         if len(answers) == 0 or authoritative not in json_data['nameServers']:
             return None, None, 'Nameservers not authoritative'
 
-    return json_data, host
+    return json_data, host, None
 
   except:
     return None, None, 'Internal error'

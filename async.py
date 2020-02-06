@@ -26,9 +26,9 @@ def async_post():
         return template('invalid_data.tpl')
 
     # See if the DNS Provider supports domain connect
-    json_data, txt, message = util.get_domainconnect_json(domain)
+    json_data, txt, error_message = util.get_domainconnect_json(domain)
     if json_data == None:
-        return template('no_domain_connect.tpl', {'reason' : message})
+        return template('no_domain_connect.tpl', {'reason' : str(error_message)})
 
     # Get the provider name
     dns_provider = json_data['providerName']

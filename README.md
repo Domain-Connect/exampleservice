@@ -35,3 +35,9 @@ You can also run this application locally on your own box in a simple bottle ser
 One caveat: you'll need to modify your local hosts file so exampleservice.domainconnect.org resolves to your own localhost.
 
 Also see instructions on running in [Docker](docker/README.md).
+
+# Dependencies
+
+The service uses python3.
+
+It relies on bottle, dnspython, cryptography, and the requests packages.

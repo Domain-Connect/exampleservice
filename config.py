@@ -2,7 +2,7 @@ import os
 
 # This is the IP address of the server running this code. You can run the
 # sample on localhost, but you'll need to edit your host file
-ip = os.getenv('APP_IP', '132.148.25.185')
+ip = os.getenv('APP_IP', '132.148.166.208')
 
 # This is the host name of our application
 hosting_website = os.getenv('APP_DOMAIN', 'exampleservice.domainconnect.org')

@@ -8,9 +8,8 @@ verify_ssl = true
 [packages]
 bottle = "*"
 dnspython = "*"
-pycrypto = "*"
 requests = "*"
 cryptography = "*"
 
 [requires]
-python_version = "2.7"
+python_version = "3.6"

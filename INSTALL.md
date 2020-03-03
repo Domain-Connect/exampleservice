@@ -1,7 +1,7 @@
 # Installation
 
-The goal of this document is to provide a step-by-step tutorial on
-linking uWSGI, nginx, and Bottle. 
+The goal of this document is to provide step-by-step instructions on running the site using 
+uWSGI, nginx, and Bottle. 
 
 Bottle is a web framework written in Python which can be run in production-scale environments through the
 utilization of nginx and uWSGI.
@@ -26,7 +26,7 @@ Installation/Preparing centOS VM
 
 To prepare your VM, enter the following commands:
 
-    $ sudo yum install epel-release
+    $ sudo yum install python3
     $ sudo yum install python3-pip
     $ sudo yum install git
     $ sudo yum install gcc
@@ -38,7 +38,7 @@ To prepare your VM, enter the following commands:
 Clone the application and install requirements
 ===================================================
 
-    $ git clone https://github.com/Domain-Connect/python-dc-statelesshosting 
+    $ git clone https://github.com/Domain-Connect/exampleservice
 
 Install requirements:
 
@@ -48,14 +48,24 @@ or use
 
     $  pipenv install
 
-Test Applications
+Test Bottle
 =================================
 
 It is important to ensure that Bottle, uWSGI, and nginx all work
 properly. The repository is in the /home directory.
 
-    $ cd python-dc-statelesshosting
+    $ cd exampleservice
     $ sudo python statelesshosting.py
+    
+Install SSL
+==================================
+Assuming you are running this using SSL, you'll need the domainconnect.org certs 
+installed in /etc/nginx/ssl.
+
+If you aren't running with SSL, modify the nginx.conf to disable.
+
+Run/Test UWSGI and NGinx
+==================================
     
 Go to x.x.x.x in your web browser and ensure that the site is running.
 Enter Ctrl + C to kill the Bottle app.
@@ -66,7 +76,7 @@ This command will start uWSGI, setting up a Unix socket and specifying
 the app nginx will connect to. Make sure there are no errors. uWSGI will
 run in the background. Enter the next command.
 
-    $ sudo nginx -c ~/python-dc-statelesshosting/nginx.conf
+    $ sudo nginx -c ~/exampleservice/nginx.conf
 
 This will launch the nginx server. Go to x.x.x.x and make sure the site
 is running on nginx!
@@ -80,7 +90,7 @@ implement an on-boot Bottle app.
 
     $ cd /etc/systemd/system
 
-    $ sudo vim statelesshosting.service
+    $ sudo vim exampleservice.service
 
 In this file, write the following:
 
@@ -88,7 +98,7 @@ In this file, write the following:
     Description=Service to start uWSGI and nginx on boot
     
     [Service]
-    ExecStart=/usr/bin/bash -c 'cd /home/%user%/python-dc-statelesshosting; (uwsgi --ini uwsgi.ini &); nginx -c /home/%user%/python-dc-statelesshosting/nginx.conf'
+    ExecStart=/usr/bin/bash -c 'cd /home/%user%/exampleservice; (uwsgi --ini uwsgi.ini &); nginx -c /home/%user%/exampleservice/nginx.conf'
     
     [Install]
     WantedBy=multi-user.target
@@ -96,7 +106,7 @@ In this file, write the following:
 Save and exit the file. On service start, it will run bash commands to change directory, start uWSGI, and start nginx. It’s just like what we did above, except it’s automated by a service.
 Test to make sure the service runs, and if it does, enable it on boot.
 
-    $ sudo systemctl start statelesshosting.service
-    $ sudo systemctl enable statelesshosting.service
+    $ sudo systemctl start exampleservice.service
+    $ sudo systemctl enable exampleservice.service
     
 Your Bottle app is now running, and will start when the VM boots up. 

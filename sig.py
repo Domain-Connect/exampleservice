@@ -4,15 +4,15 @@
 
 from bottle import Bottle, run, route, template, request, response, abort, static_file, default_app, redirect
 
-import urllib
-#import urlparse
+from urllib.parse import urlparse
+from urllib.parse import unquote
 
 import util
 import sigutil
 import config
 
 @route('/sig', method='GET')
-def sig():    
+def sig():
 
     # This only works for the hosting website over the supported protocol
     if request.headers['Host'] != config.hosting_website or request.urlparts.scheme != config.protocol:
@@ -67,7 +67,7 @@ def sig_fetch():
                     'key': key,
                     'pubKey': pub_key,
                     'record_strings': record_strings
-                })                    
+                })
 
 
 @route('/sig_verify', method='POST')
@@ -112,7 +112,7 @@ def sig_verify():
                     'verified': verified,
                     'pubKey': pub,
                     'record_strings': record_strings
-                })                    
+                })
 
 @route('/sig_verify_url', method='POST')
 def sig_verify_url():
@@ -126,15 +126,15 @@ def sig_verify_url():
     domain = request.forms.get('domain')
 
     #params = urlparse.urlparse(url).query.split('&')
-    params = urllib.parse(url).query.split('&')
+    params = urlparse(url).query.split('&')
     sig = None
     key = None
     qs = None
     for param in params:
         if param.startswith('sig='):
-            sig = urllib.unquote(param[4:])
+            sig = unquote(param[4:])
         elif param.startswith('key='):
-            key = urllib.unquote(param[4:])
+            key = unquote(param[4:])
         else:
             if not qs:
                 qs = param
@@ -162,6 +162,6 @@ def sig_verify_url():
                     'verified': verified,
                     'pubKey': pub,
                     'record_strings': record_strings
-                })                    
+                })
 
 

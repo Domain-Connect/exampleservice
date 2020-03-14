@@ -1,10 +1,10 @@
 FROM python:3.6
 
-RUN pip3 install --upgrade pip3
+RUN python -m ensurepip --upgrade
 
 COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
 
-RUN pip3 install uwsgi
+RUN pip install uwsgi
 
 WORKDIR /workspace

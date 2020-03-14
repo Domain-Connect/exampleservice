@@ -35,7 +35,7 @@ def get_messagetext(domain):
         answers = dns.resolver.query(domain, 'TXT')
         timestamps = {}
         for answer in answers:
-            data = answer.strings[0].split(':') # List containing ['shm', 'date', 'text']
+            data = answer.strings[0].decode("utf-8").split(':') # List containing ['shm', 'date', 'text']
             
             if data[0] == 'shm':
                 if len(data) == 2:

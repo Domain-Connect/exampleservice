@@ -9,6 +9,7 @@ from sig import *
 from ddns import *
 from sync import *
 from async import *
+from client import *
 
 app = application = default_app()
 

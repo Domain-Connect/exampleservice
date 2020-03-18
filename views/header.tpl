@@ -8,6 +8,6 @@
 
 <a href="https://domainconnect.org"><img src="static/dclogo2.png"></a>
 <br/>
-<a href="/">[Example Service Home]</a>&nbsp;&nbsp;<a href='/simple_index'>[Simple]</a>&nbsp;&nbsp;<a href="/sync_index">[Sync Detailed]</a>&nbsp;&nbsp;<a href='/async_index'>[Async Detailed]</a>&nbsp;&nbsp;<a href="/sig">[Signature Tools]</a>
+<a href="/">[Example Service Home]</a>&nbsp;&nbsp;<a href='/simple_index'>[Simple]</a>&nbsp;&nbsp;<a href="/sync_index">[Sync Detailed]</a>&nbsp;&nbsp;<a href='/async_index'>[Async Detailed]</a>&nbsp;&nbsp;<a href="/sig">[Signature Tools]</a>&nbsp;&nbsp;<a href="/client">[Client Side]</a>
 <br/>
 

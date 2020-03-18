@@ -9,19 +9,19 @@ function callbackfunc(url, domain, host, provider_name, data) {
     if (url) {
         url = url + '&RANDOMTEXT=shm:0:' + encodeURIComponent(data) + '&IP=132.148.166.208'
 
-	document.getElementById("domainconnect").innerHMTL = "<h1>Results</h1>Click to <a hef='" + url + "'>configure</a> your domain with " + provider_name;
+	document.getElementById("domainconnect").innerHTML = "<h1>Results</h1>Click to <a target=_new href='" + url + "'>configure</a> your domain with " + provider_name
 	
     } else {
-        document.getElementById('domainconnect').innerHTML = "<h1>Results</h1>Domain does not support domain connect";
+        document.getElementById('domainconnect').innerHTML = "<h1>Results</h1)Domain does not support domain connect";
     }
 		 
 	 
 }
 
 function publish() {
-	 domain = document.getElementById('domain');
-	 message = document.getElementById('message');
-	 host = document.getElementById('host');
+	 domain = document.getElementById('domain').value;
+	 message = document.getElementById('message').value;
+	 host = document.getElementById('host').value;
 
 	 domain_connect(domain, host, message, 'exampleservice.domainconnect.org', 'template1', callbackfunc);
 }

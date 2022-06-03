@@ -1,4 +1,4 @@
-bottle==0.12.16
+bottle==0.12.20
 cryptography==2.6.1
 dnspython==1.16.0
 requests

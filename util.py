@@ -20,9 +20,12 @@ def is_valid_hostname(hostname):
     allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
     return all(allowed.match(x) for x in hostname.split("."))
 
-# A valid _domainconnect record value is a host name with an optional path
+# A valid _domainconnect record value is a host name with an optional port and path
 def is_valid_dc_txt(dc_txt):
     host, slash, path = dc_txt.partition('/')
+    host, colon, port = host.partition(':')
+    if colon and not (re.match("^[0-9]{1,5}$", port) and 1 <= int(port) <= 65535):
+        return False
     return is_valid_hostname(host) and re.match("^[a-zA-Z0-9._~/-]*$", path) is not None
 
 # A valid settings protocol override

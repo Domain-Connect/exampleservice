@@ -25,7 +25,7 @@ def test_post_with_dc_txt_uses_it_for_any_domain(dns_records, dns_provider):
 def test_post_with_invalid_dc_txt_is_invalid_data(dns_records, dns_provider):
     dns_records({})
     dns_provider(SETTINGS)
-    r = wsgi_post(statelesshosting.app, '/async_post', HOST, dict(FORM, dc_txt='api.provider.test:1'))
+    r = wsgi_post(statelesshosting.app, '/async_post', HOST, dict(FORM, dc_txt='api.provider.test:0'))
     assert 'Invalid Data' in r['body']
 
 

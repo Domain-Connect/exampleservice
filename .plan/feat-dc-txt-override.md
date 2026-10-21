@@ -1,7 +1,7 @@
 # dc-txt-override — iteration plan
 
 **Branch:** feat/dc-txt-override **Started:** 2026-10-21 **Issue:** #23
-**Goal:** a `dc_txt` query parameter on the simple, sync, async and client flows replaces the `_domainconnect` TXT lookup for any domain.
+**Goal:** `dc_txt` on the simple, sync, async and client flows replaces the `_domainconnect` TXT lookup for any domain; `dc_proto` sets the protocol of the settings call.
 **Stash:** none
 
 ## Tasks
@@ -12,6 +12,7 @@
 - [x] Simple, sync, async: hidden field, POST, result page note
 - [x] Client: `static/domainconnect.js` takes the override
 - [x] Gates, docs
+- [x] `dc_proto`: requirement, failing tests, code
 - [~] PR as draft, maintainer checks the pages
 - [ ] File issue: `static/domainconnect.js` sets `xhr.onerror` for the settings request and does not return after a failed settings response
 - [ ] Promote findings, delete this file
@@ -27,11 +28,14 @@
 - Dev server on 8082 (8081 is held by the maintainer's own server): 7 of 7 GET pages 200; `dc_txt=domainconnect.api.godaddy.com` with `example.com` finds GoDaddy in all three flows; `dc_txt=api.cloudflare.com/client/v4/dns/domainconnect` reaches the template check; `dc_txt=bad?x` is Invalid Data.
 - CLAUDE.md, DEVELOPING.md, REQUIREMENTS.md, TESTING.md are in `.git/info/exclude`: their changes stay local.
 
+- `dc_proto`: 10 new tests failed first, 38 of 38 pass. Live on 8082 with `dc_txt=domainconnect.api.godaddy.com`, `example.com`: `http` → *No json returned for /settings* (GoDaddy answers 404 over http), `https` → GoDaddy found, `ftp` → Invalid Data, in all three flows.
+
 ## Decisions
 
 - Parameter name `dc_txt` (maintainer).
 - All four flows (maintainer).
 - With `dc_txt`, the `nameServers` check is skipped (maintainer).
+- `dc_proto` is `http` or `https`, independent of `dc_txt`; it applies only to the settings call, the template check and apply URLs come from the settings.
 - `dc_txt` is a host name with an optional path of `[A-Za-z0-9._~/-]`; otherwise `invalid_data.tpl`.
 
 ## Corrections

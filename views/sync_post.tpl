@@ -14,7 +14,7 @@ Query for the _domainconnect TXT record at {{domain}}:
 % end
 
 <h4>Step 2</h4>
-Calling URL https://{{txt}}/v2/{{domain}}/settings:
+Calling URL {{settings_protocol}}://{{txt}}/v2/{{domain}}/settings:
 <p/>
 <pre style="font-family:Courier" id="json"></pre>
 <script>document.getElementById("json").innerHTML = JSON.stringify({{!json}}, undefined, 2);</script>

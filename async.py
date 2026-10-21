@@ -8,7 +8,7 @@ import requests
 
 @route('/async_index', method='GET')
 def async_index():
-    return template('async_index.tpl', {'dc_txt': request.query.get('dc_txt') or ''})
+    return template('async_index.tpl', {'dc_txt': request.query.get('dc_txt') or '', 'dc_proto': request.query.get('dc_proto') or ''})
 
 @route('/async_post', method='POST')
 def async_post():
@@ -21,13 +21,14 @@ def async_post():
     domain = request.forms.get('domain')
     hosts = request.forms.get('hosts')
     dc_txt = request.forms.get('dc_txt')
+    dc_proto = request.forms.get('dc_proto')
     if hosts is None:
         hosts = ''
-    if domain == None or domain == '' or not util.is_valid_hostname(domain) or (dc_txt and not util.is_valid_dc_txt(dc_txt)):
+    if domain == None or domain == '' or not util.is_valid_hostname(domain) or (dc_txt and not util.is_valid_dc_txt(dc_txt)) or (dc_proto and not util.is_valid_dc_proto(dc_proto)):
         return template('invalid_data.tpl')
 
     # See if the DNS Provider supports domain connect
-    json_data, txt, error_message = util.get_domainconnect_json(domain, dc_txt)
+    json_data, txt, error_message = util.get_domainconnect_json(domain, dc_txt, dc_proto)
     if json_data == None:
         return template('no_domain_connect.tpl', {'reason' : str(error_message)})
 
@@ -60,6 +61,7 @@ def async_post():
 		{
                     'txt': txt,
                     'dc_txt': dc_txt,
+                    'settings_protocol': dc_proto or 'https',
                     'json': json.dumps(json_data),
                     'check_url1' : check_url1,
                     'check_url2' : check_url2,

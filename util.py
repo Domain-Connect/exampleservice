@@ -25,6 +25,10 @@ def is_valid_dc_txt(dc_txt):
     host, slash, path = dc_txt.partition('/')
     return is_valid_hostname(host) and re.match("^[a-zA-Z0-9._~/-]*$", path) is not None
 
+# A valid settings protocol override
+def is_valid_dc_proto(dc_proto):
+    return dc_proto in ('http', 'https')
+
 # A valid message can only contain certain characters
 def is_valid_message(message):
     if len(message) < 1 or len(message) > 255:
@@ -69,8 +73,9 @@ def check_template(url):
         return False
     
     
-# Checks if the DNS Provider supports Domain Connect. dc_txt, when given, replaces the _domainconnect record
-def get_domainconnect_json(domain, dc_txt=None):
+# Checks if the DNS Provider supports Domain Connect. dc_txt, when given, replaces the _domainconnect record;
+# dc_proto, when given, is the protocol of the settings call
+def get_domainconnect_json(domain, dc_txt=None, dc_proto=None):
 
   try:
 
@@ -86,7 +91,7 @@ def get_domainconnect_json(domain, dc_txt=None):
         host = answers[0].strings[0].decode('utf-8')
 
     # Form the URL to get the json and fetch it
-    url = 'https://' + host + '/v2/' + domain + '/settings'
+    url = (dc_proto or 'https') + '://' + host + '/v2/' + domain + '/settings'
     r = requests.get(url, verify=False)
 
     # Remember that the json might fail if the provider from the DNS TXT record doesn't contain the zone

@@ -18,6 +18,9 @@ The subsequent pages will get permission, and then allow application of template
 % if dc_txt:
 <input name='dc_txt' value='{{dc_txt}}' type='hidden'/>
 % end
+% if dc_proto:
+<input name='dc_proto' value='{{dc_proto}}' type='hidden'/>
+% end
 <table>
 <tr><td>Domain Name</td><td><input name='domain' type="text"/></td></tr>
 <tr><td>Host (optional)</td><td><input name='hosts' type="text"/></td></tr>

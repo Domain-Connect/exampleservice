@@ -8,6 +8,11 @@ import requests
 
 @route('/async_index', method='GET')
 def async_index():
+
+    # This only works for the hosting website over the supported protocol
+    if request.headers['Host'] != config.hosting_website or request.urlparts.scheme != config.protocol:
+        return abort(404)
+
     return template('async_index.tpl')
 
 @route('/async_post', method='POST')

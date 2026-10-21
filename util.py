@@ -17,7 +17,7 @@ def is_valid_hostname(hostname):
         return False
     if hostname[-1] == ".":
         hostname = hostname[:-1] # strip exactly one dot from the right, if present
-    allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+    allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
     return all(allowed.match(x) for x in hostname.split("."))
 
 # A valid message can only contain certain characters
@@ -32,7 +32,7 @@ def get_messagetext(domain):
         messagetext = ''
 
         # Get the txt record for domain connect
-        answers = dns.resolver.query(domain, 'TXT')
+        answers = dns.resolver.resolve(domain, 'TXT')
         timestamps = {}
         for answer in answers:
             data = answer.strings[0].decode("utf-8").split(':') # List containing ['shm', 'date', 'text']
@@ -70,7 +70,7 @@ def get_domainconnect_json(domain):
   try:
 
     # Get the txt record for domain connect from the domain
-    answers = dns.resolver.query('_domainconnect.' + domain, 'TXT')
+    answers = dns.resolver.resolve('_domainconnect.' + domain, 'TXT')
     if len(answers) != 1:
         return None, None, 'No _domainconnect TXT record'
 
@@ -90,7 +90,7 @@ def get_domainconnect_json(domain):
 
     # If the provider returned nameservers, verify that they are athoritative
     if 'nameServers' in json_data:
-        answers = dns.resolver.query(domain, 'NS')
+        answers = dns.resolver.resolve(domain, 'NS')
         if len(answers) == 0:
             return None, None, 'No nameservers found'
         authoritative = str(answers[0])

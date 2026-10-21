@@ -3,12 +3,14 @@ from bottle import Bottle, run, route, template, request, response, abort, stati
 import config
 import util
 import json
+import importlib
 
 from simple import *
 from sig import *
 from ddns import *
 from sync import *
-from async import *
+# 'async' is a keyword; importing the module registers its routes
+importlib.import_module('async')
 from client import *
 
 app = application = default_app()

@@ -1,3 +1,5 @@
+import re
+
 import statelesshosting
 from conftest import wsgi_get, wsgi_post
 
@@ -47,3 +49,30 @@ def test_post_with_invalid_dc_proto_is_invalid_data(dns_records, dns_provider):
     dns_provider(SETTINGS)
     r = wsgi_post(statelesshosting.app, '/simple_post', HOST, dict(FORM, dc_txt='api.provider.test', dc_proto='ftp'))
     assert 'Invalid Data' in r['body']
+
+
+def test_post_links_apply_url_with_redirect_in_the_same_window(dns_records, dns_provider):
+    dns_records({('_domainconnect.example.com', 'TXT'): ['api.provider.test']})
+    dns_provider(SETTINGS)
+    r = wsgi_post(statelesshosting.app, '/simple_post', HOST, dict(FORM, subdomain='www'))
+    assert r['status'] == 200
+    assert re.search(r"<a href='https://ux\.provider\.test/v2/domainTemplates/providers/exampleservice\.domainconnect\.org/services/template1/apply"
+                     r"\?domain=example\.com&amp;RANDOMTEXT=shm%3A[0-9]+%3AHi&amp;IP=192\.0\.2\.1&amp;host=www"
+                     r"&amp;redirect_uri=https%3A%2F%2Fexampleservice\.test%2Fsimple_confirm%3Fdomain%3Dexample\.com%26subdomain%3Dwww'>", r['body'])
+    assert 'window.open' not in r['body']
+
+
+def test_confirm_shows_the_site():
+    r = wsgi_get(statelesshosting.app, '/simple_confirm', HOST, query='domain=example.com&subdomain=www')
+    assert r['status'] == 200
+    assert "href='http://www.example.com'" in r['body']
+
+
+def test_confirm_shows_the_error():
+    r = wsgi_get(statelesshosting.app, '/simple_confirm', HOST, query='domain=example.com&error=access_denied')
+    assert 'Synchronous Error' in r['body']
+    assert 'access_denied' in r['body']
+
+
+def test_confirm_serves_only_the_hosting_website():
+    assert wsgi_get(statelesshosting.app, '/simple_confirm', 'example.com', query='domain=example.com')['status'] == 404

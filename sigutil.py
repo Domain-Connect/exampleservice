@@ -81,7 +81,7 @@ def get_publickey(domain):
 
         # Concatenate all of the key segments
         for key in sorted(list(segments.keys())):
-            pembits = pembits + segments[key].strip('\n').strip('\\n').strip()
+            pembits = pembits + segments[key].replace('\n', '').replace('\\n', '').strip()
             
         return pembits, record_strings
     except:

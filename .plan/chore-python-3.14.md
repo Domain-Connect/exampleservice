@@ -30,8 +30,8 @@
 - Dev server: `/`, `/simple_index`, `/sync_index`, `/async_index`, `/sig`, `/client` return 200. `/sync_post` for `domainconnect.org` discovers GoDaddy and builds both apply URLs with `sig=…&key=_dck1`.
 - Docker: `docker compose build` ok; image runs Python 3.14.8, uWSGI 2.0.31; the same 6 pages return 200 through nginx on 8001; `/sig_fetch` reads `_dck1.exampleservice.domainconnect.org`.
 - A signature from `config.priv_key` verifies against the live `_dck1` key (G5).
-- Defect, not fixed: `/sync_index` and `/async_index` (and the other sync/async routes) do not check the host and protocol; H1 requires 404 — `sync.py:10`, `async.py:9`.
-- Defect, not fixed: `/` on a host whose TXT records hold no `shm:` record renders 200 with no message; S2 requires 404 — `util.get_messagetext` returns `''`, `statelesshosting.py` checks only `None`. Seen live: `Host: example.com` → 200.
+- Defect, not fixed: `/sync_index` and `/async_index` do not check the host and protocol; H1 requires 404 — `sync.py:10`, `async.py:9`. Issue #18.
+- Defect, not fixed: `/` on a host whose TXT records hold no `shm:` record renders 200 with no message; S2 requires 404 — `util.get_messagetext` returns `''`, `statelesshosting.py` checks only `None`. Seen live: `Host: example.com` → 200. Issue #19.
 - Defect, not fixed: `statelesshosting.py` uses `request.header['Host']` in the `whd.` branch (S3); `request.header` does not exist.
 - Installed in `.venv`: bottle 0.13.4, cryptography 50.0.2, dnspython 2.9.0, requests 2.34.2, pytest 9.1.1.
 
@@ -42,7 +42,11 @@
 
 ## Corrections
 
+- The first finding said all sync/async routes skip the host check; only `/sync_index` and `/async_index` do.
+
 ## Open questions
 
+- The repository has no `severity: *` labels; #18 and #19 carry the severity in the body.
+- Issue for the `request.header` defect: not requested yet.
+
 - Production uWSGI plugin name for Python 3.14 (`uwsgi.ini` `plugin = python314`) depends on the host's packages.
-- `gh` is not logged in: push and PR wait for `gh auth login`.

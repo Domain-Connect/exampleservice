@@ -1,15 +1,7 @@
 import requests
 
 import util
-
-
-class Response:
-    def __init__(self, status_code, json_data=None):
-        self.status_code = status_code
-        self.json_data = json_data
-
-    def json(self):
-        return self.json_data
+from conftest import Response
 
 
 def test_valid_hostnames():
@@ -18,6 +10,16 @@ def test_valid_hostnames():
     assert not util.is_valid_hostname('a.b')
     assert not util.is_valid_hostname('-a.example.com')
     assert not util.is_valid_hostname('a_b.example.com')
+
+
+def test_valid_dc_txt():
+    assert util.is_valid_dc_txt('api.provider.test')
+    assert util.is_valid_dc_txt('api.provider.test/client/v4/dns/domainconnect')
+    assert not util.is_valid_dc_txt('a.b')
+    assert not util.is_valid_dc_txt('api.provider.test:8443')
+    assert not util.is_valid_dc_txt('api.provider.test/x?y=1')
+    assert not util.is_valid_dc_txt('api.provider.test/<b>')
+    assert not util.is_valid_dc_txt('/path')
 
 
 def test_valid_messages():
@@ -66,3 +68,12 @@ def test_discovery_rejects_other_name_servers(dns_records, monkeypatch):
 def test_discovery_without_record(dns_records):
     dns_records({})
     assert util.get_domainconnect_json('example.com') == (None, None, 'Internal error')
+
+
+def test_discovery_with_dc_txt_skips_dns(dns_records, dns_provider):
+    dns_records({})
+    settings = {'providerName': 'Provider', 'nameServers': ['ns1.provider.test']}
+    urls = dns_provider(settings)
+
+    assert util.get_domainconnect_json('example.com', 'api.provider.test/dc') == (settings, 'api.provider.test/dc', None)
+    assert urls == ['https://api.provider.test/dc/v2/example.com/settings']

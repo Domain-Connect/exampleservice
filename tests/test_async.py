@@ -27,3 +27,24 @@ def test_post_with_invalid_dc_txt_is_invalid_data(dns_records, dns_provider):
     dns_provider(SETTINGS)
     r = wsgi_post(statelesshosting.app, '/async_post', HOST, dict(FORM, dc_txt='api.provider.test:1'))
     assert 'Invalid Data' in r['body']
+
+
+def test_index_passes_dc_proto_on():
+    r = wsgi_get(statelesshosting.app, '/async_index', HOST, query='dc_proto=http')
+    assert "name='dc_proto' value='http'" in r['body']
+
+
+def test_post_with_dc_proto_calls_settings_over_it(dns_records, dns_provider):
+    dns_records({})
+    urls = dns_provider(SETTINGS)
+    r = wsgi_post(statelesshosting.app, '/async_post', HOST, dict(FORM, dc_txt='api.provider.test', dc_proto='http'))
+    assert r['status'] == 200
+    assert urls[0] == 'http://api.provider.test/v2/example.com/settings'
+    assert 'http://api.provider.test/v2/example.com/settings' in r['body']
+
+
+def test_post_with_invalid_dc_proto_is_invalid_data(dns_records, dns_provider):
+    dns_records({})
+    dns_provider(SETTINGS)
+    r = wsgi_post(statelesshosting.app, '/async_post', HOST, dict(FORM, dc_txt='api.provider.test', dc_proto='file'))
+    assert 'Invalid Data' in r['body']

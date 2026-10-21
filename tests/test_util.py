@@ -77,3 +77,11 @@ def test_discovery_with_dc_txt_skips_dns(dns_records, dns_provider):
 
     assert util.get_domainconnect_json('example.com', 'api.provider.test/dc') == (settings, 'api.provider.test/dc', None)
     assert urls == ['https://api.provider.test/dc/v2/example.com/settings']
+
+
+def test_discovery_with_dc_proto_calls_settings_over_it(dns_records, dns_provider):
+    dns_records({('_domainconnect.example.com', 'TXT'): ['api.provider.test']})
+    urls = dns_provider({'providerName': 'Provider'})
+
+    assert util.get_domainconnect_json('example.com', None, 'http')[2] is None
+    assert urls == ['http://api.provider.test/v2/example.com/settings']

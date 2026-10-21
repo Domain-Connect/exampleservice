@@ -13,8 +13,8 @@
 - [x] `dns.resolver.resolve`, raw regex string
 - [x] Python 3.14 in `docker/Dockerfile-web`, `uwsgi.ini`, `Pipfile`, INSTALL.md
 - [x] Gates (TESTING.md §5), Docker build and live check
-- [~] Push, draft PR (needs `gh auth login`)
-- [ ] Issues for the defects below
+- [x] Push, draft PR #20
+- [~] Issues for the defects below (#18, #19 filed)
 - [ ] Promote findings, delete this file
 
 ## Findings

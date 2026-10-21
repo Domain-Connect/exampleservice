@@ -7,13 +7,8 @@ Your provider is {{providerName}}.
 <p>_domainconnect record: {{dc_txt}} (dc_txt)</p>
 % end
 
-<h3>Step 1</h3>
-<a target=_new href='javascript:null(void);' onclick='window.open("{{synchronousUrl1}}", "", "width={{width}},height={{height}}");'>Click here for one easy setup.</a>
-
-<h3>Step 2</h3>
-<a href='http://{{fqdn}}'>Visit your site</a>
-
+<a href='{{synchronousRedirectUrl1}}'>Click here for one easy setup.</a>
 <p/>
-Note: It may take a few minutes for your configuration to take affect.
+{{providerName}} applies the template and sends you back here.
 
 % include('footer.tpl')

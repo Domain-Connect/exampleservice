@@ -19,7 +19,7 @@ def simple_index():
     if request.headers['Host'] != config.hosting_website or request.urlparts.scheme != config.protocol:
         return abort(404)
 
-    return template('simple_index.tpl')
+    return template('simple_index.tpl', {'dc_txt': request.query.get('dc_txt') or ''})
 
 @route('/simple_post', method='POST')
 def simple_post():
@@ -27,11 +27,12 @@ def simple_post():
     domain = request.forms.get('domain')
     subdomain = request.forms.get('subdomain')
     message = request.forms.get('message')
-    if domain == None or domain == '' or not util.is_valid_hostname(domain) or message == None or message == '' or not util.is_valid_message(message):
+    dc_txt = request.forms.get('dc_txt')
+    if domain == None or domain == '' or not util.is_valid_hostname(domain) or message == None or message == '' or not util.is_valid_message(message) or (dc_txt and not util.is_valid_dc_txt(dc_txt)):
         return template('invalid_data.tpl')
 
     # See if the DNS Provider supports domain connect
-    json_data, txt, error_message = util.get_domainconnect_json(domain)
+    json_data, txt, error_message = util.get_domainconnect_json(domain, dc_txt)
     if json_data == None:
         return template('no_domain_connect.tpl', {'reason' : str(error_message)})
 
@@ -65,6 +66,7 @@ def simple_post():
     return template('simple_post.tpl',
 		{
                     'providerName' : json_data['providerName'], 
+                    'dc_txt': dc_txt,
                     'width': width,
                     'height': height,
                     'synchronousUrl1' : synchronousUrl1,

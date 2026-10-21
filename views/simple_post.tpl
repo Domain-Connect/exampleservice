@@ -3,6 +3,9 @@
 <h2>Provider Found: Your domain uses {{providerName}}</h2>
 
 Your provider is {{providerName}}. 
+% if dc_txt:
+<p>_domainconnect record: {{dc_txt}} (dc_txt)</p>
+% end
 
 <h3>Step 1</h3>
 <a target=_new href='javascript:null(void);' onclick='window.open("{{synchronousUrl1}}", "", "width={{width}},height={{height}}");'>Click here for one easy setup.</a>

@@ -1,5 +1,11 @@
 
-function domain_connect(domain, host, data, providerId, serviceId, cb) {
+function domain_connect(domain, host, data, providerId, serviceId, cb, dc_txt) {
+
+    // dc_txt, when given, replaces the _domainconnect TXT record
+    if (dc_txt) {
+	get_settings(dc_txt);
+	return;
+    }
 
     // Query for the _domainconnect TXT record
     const xhr = new XMLHttpRequest();
@@ -26,6 +32,11 @@ function domain_connect(domain, host, data, providerId, serviceId, cb) {
 	d = this.response['Answer'][len-1]['data'];
 	d = d.split('"').join('');
 
+	get_settings(d);
+    };
+    xhr.send();
+
+    function get_settings(d) {
 	// Get the JSON for the settings
 	xhr2 = new XMLHttpRequest();
 	xhr2.open('GET', 'https://' + d + '/v2/' + domain + '/settings');
@@ -63,6 +74,5 @@ function domain_connect(domain, host, data, providerId, serviceId, cb) {
 	    xhr3.send();
 	}
 	xhr2.send();
-    };
-    xhr.send();
+    }
 }

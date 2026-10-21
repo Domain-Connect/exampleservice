@@ -1,4 +1,4 @@
-from dns.resolver import dns
+import dns.resolver
 
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -56,7 +56,7 @@ def get_publickey(domain):
     try:
         segments = {}
 
-        records = dns.resolver.query(domain, 'TXT') # Get all text records
+        records = dns.resolver.resolve(domain, 'TXT') # Get all text records
         record_strings = []
         for text in records:
             text = text.strings[0].decode('utf-8')

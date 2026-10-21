@@ -52,7 +52,7 @@ def test_post_with_invalid_dc_proto_is_invalid_data(dns_records, dns_provider):
 
 
 def test_post_links_apply_url_with_redirect_in_the_same_window(dns_records, dns_provider):
-    dns_records({('_domainconnect.example.com', 'TXT'): ['api.provider.test']})
+    dns_records({('_domainconnect.example.com', 'TXT'): ['api.provider.test'], ('example.com', 'NS'): ['ns1.provider.test.']})
     dns_provider(SETTINGS)
     r = wsgi_post(statelesshosting.app, '/simple_post', HOST, dict(FORM, subdomain='www'))
     assert r['status'] == 200

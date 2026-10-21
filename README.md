@@ -38,6 +38,6 @@ Also see instructions on running in [Docker](docker/README.md).
 
 # Dependencies
 
-The service uses python3.
+The service uses Python 3.14.
 
 It relies on bottle, dnspython, cryptography, and the requests packages.

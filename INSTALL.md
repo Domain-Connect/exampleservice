@@ -9,7 +9,7 @@ utilization of nginx and uWSGI.
 This tutorial is written from the perspective of a virtual machine
 running centOS 7, and assumes the user already has an nginx.conf and
 uwsgi.ini file inside their Git repository. The user should already have
-Python 3.6 installed. If this is not the case, the user should do so
+Python 3.14 installed. If this is not the case, the user should do so
 themselves.
 
 It is worth mentioning that, in the case of a VM which has many Python
@@ -33,7 +33,7 @@ To prepare your VM, enter the following commands:
     $ sudo yum erase httpd http-tools apr apr-util 
     $ sudo yum install nginx
     $ sudo yum install uwsgi
-    $ sudo yum install uwsgi-plugin-python36
+    $ sudo yum install uwsgi-plugin-python314
 
 Clone the application and install requirements
 ===================================================

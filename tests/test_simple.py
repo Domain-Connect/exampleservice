@@ -37,9 +37,9 @@ def test_index_passes_dc_proto_on():
 def test_post_with_dc_proto_calls_settings_over_it(dns_records, dns_provider):
     dns_records({})
     urls = dns_provider(SETTINGS)
-    r = wsgi_post(statelesshosting.app, '/simple_post', HOST, dict(FORM, dc_txt='api.provider.test', dc_proto='http'))
+    r = wsgi_post(statelesshosting.app, '/simple_post', HOST, dict(FORM, dc_txt='api.provider.test:8443', dc_proto='http'))
     assert r['status'] == 200
-    assert urls[0] == 'http://api.provider.test/v2/example.com/settings'
+    assert urls[0] == 'http://api.provider.test:8443/v2/example.com/settings'
 
 
 def test_post_with_invalid_dc_proto_is_invalid_data(dns_records, dns_provider):

@@ -16,7 +16,12 @@ def test_valid_dc_txt():
     assert util.is_valid_dc_txt('api.provider.test')
     assert util.is_valid_dc_txt('api.provider.test/client/v4/dns/domainconnect')
     assert not util.is_valid_dc_txt('a.b')
-    assert not util.is_valid_dc_txt('api.provider.test:8443')
+    assert util.is_valid_dc_txt('api.provider.test:8443')
+    assert util.is_valid_dc_txt('172.17.0.6:5016/dc')
+    assert not util.is_valid_dc_txt('api.provider.test:')
+    assert not util.is_valid_dc_txt('api.provider.test:0')
+    assert not util.is_valid_dc_txt('api.provider.test:65536')
+    assert not util.is_valid_dc_txt('api.provider.test:80:80')
     assert not util.is_valid_dc_txt('api.provider.test/x?y=1')
     assert not util.is_valid_dc_txt('api.provider.test/<b>')
     assert not util.is_valid_dc_txt('/path')
@@ -85,3 +90,11 @@ def test_discovery_with_dc_proto_calls_settings_over_it(dns_records, dns_provide
 
     assert util.get_domainconnect_json('example.com', None, 'http')[2] is None
     assert urls == ['http://api.provider.test/v2/example.com/settings']
+
+
+def test_discovery_with_dc_txt_port(dns_records, dns_provider):
+    dns_records({})
+    urls = dns_provider({'providerName': 'Provider'})
+
+    assert util.get_domainconnect_json('example.com', '172.17.0.6:5016', 'http')[2] is None
+    assert urls == ['http://172.17.0.6:5016/v2/example.com/settings']

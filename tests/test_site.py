@@ -40,4 +40,3 @@ def test_flow_pages_render():
 def test_flow_pages_serve_only_the_hosting_website():
     for path in ['/simple_index', '/sig', '/client']:
         assert wsgi_get(statelesshosting.app, path, 'example.com')['status'] == 404
-

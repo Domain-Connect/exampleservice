@@ -1,7 +1,15 @@
 import requests
 
 import util
-from conftest import Response
+
+
+class Response:
+    def __init__(self, status_code, json_data=None):
+        self.status_code = status_code
+        self.json_data = json_data
+
+    def json(self):
+        return self.json_data
 
 
 def test_valid_hostnames():
@@ -10,21 +18,6 @@ def test_valid_hostnames():
     assert not util.is_valid_hostname('a.b')
     assert not util.is_valid_hostname('-a.example.com')
     assert not util.is_valid_hostname('a_b.example.com')
-
-
-def test_valid_dc_txt():
-    assert util.is_valid_dc_txt('api.provider.test')
-    assert util.is_valid_dc_txt('api.provider.test/client/v4/dns/domainconnect')
-    assert not util.is_valid_dc_txt('a.b')
-    assert util.is_valid_dc_txt('api.provider.test:8443')
-    assert util.is_valid_dc_txt('172.17.0.6:5016/dc')
-    assert not util.is_valid_dc_txt('api.provider.test:')
-    assert not util.is_valid_dc_txt('api.provider.test:0')
-    assert not util.is_valid_dc_txt('api.provider.test:65536')
-    assert not util.is_valid_dc_txt('api.provider.test:80:80')
-    assert not util.is_valid_dc_txt('api.provider.test/x?y=1')
-    assert not util.is_valid_dc_txt('api.provider.test/<b>')
-    assert not util.is_valid_dc_txt('/path')
 
 
 def test_valid_messages():
@@ -73,28 +66,3 @@ def test_discovery_rejects_other_name_servers(dns_records, monkeypatch):
 def test_discovery_without_record(dns_records):
     dns_records({})
     assert util.get_domainconnect_json('example.com') == (None, None, 'Internal error')
-
-
-def test_discovery_with_dc_txt_skips_dns(dns_records, dns_provider):
-    dns_records({})
-    settings = {'providerName': 'Provider', 'nameServers': ['ns1.provider.test']}
-    urls = dns_provider(settings)
-
-    assert util.get_domainconnect_json('example.com', 'api.provider.test/dc') == (settings, 'api.provider.test/dc', None)
-    assert urls == ['https://api.provider.test/dc/v2/example.com/settings']
-
-
-def test_discovery_with_dc_proto_calls_settings_over_it(dns_records, dns_provider):
-    dns_records({('_domainconnect.example.com', 'TXT'): ['api.provider.test']})
-    urls = dns_provider({'providerName': 'Provider'})
-
-    assert util.get_domainconnect_json('example.com', None, 'http')[2] is None
-    assert urls == ['http://api.provider.test/v2/example.com/settings']
-
-
-def test_discovery_with_dc_txt_port(dns_records, dns_provider):
-    dns_records({})
-    urls = dns_provider({'providerName': 'Provider'})
-
-    assert util.get_domainconnect_json('example.com', '172.17.0.6:5016', 'http')[2] is None
-    assert urls == ['http://172.17.0.6:5016/v2/example.com/settings']

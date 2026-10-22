@@ -1,6 +1,9 @@
 import re
+import urllib.parse
 
 import statelesshosting
+import sigutil
+from test_sigutil import public_key_pem
 from conftest import wsgi_get, wsgi_post
 
 HOST = 'exampleservice.test'
@@ -20,7 +23,7 @@ def test_post_with_dc_txt_uses_it_for_any_domain(dns_records, dns_provider):
     r = wsgi_post(statelesshosting.app, '/simple_post', HOST, dict(FORM, dc_txt='api.provider.test'))
     assert r['status'] == 200
     assert urls[0] == 'https://api.provider.test/v2/example.com/settings'
-    assert 'https://ux.provider.test/v2/domainTemplates/providers/exampleservice.domainconnect.org/services/template1/apply?domain=example.com' in r['body']
+    assert 'https://ux.provider.test/v2/domainTemplates/providers/exampleservice.domainconnect.org/services/template2/apply?domain=example.com' in r['body']
     assert '_domainconnect record: api.provider.test (dc_txt)' in r['body']
 
 
@@ -56,9 +59,9 @@ def test_post_links_apply_url_with_redirect_in_the_same_window(dns_records, dns_
     dns_provider(SETTINGS)
     r = wsgi_post(statelesshosting.app, '/simple_post', HOST, dict(FORM, subdomain='www'))
     assert r['status'] == 200
-    assert re.search(r"<a href='https://ux\.provider\.test/v2/domainTemplates/providers/exampleservice\.domainconnect\.org/services/template1/apply"
+    assert re.search(r"<a href='https://ux\.provider\.test/v2/domainTemplates/providers/exampleservice\.domainconnect\.org/services/template2/apply"
                      r"\?domain=example\.com&amp;RANDOMTEXT=shm%3A[0-9]+%3AHi&amp;IP=192\.0\.2\.1&amp;host=www"
-                     r"&amp;redirect_uri=https%3A%2F%2Fexampleservice\.test%2Fsimple_confirm%3Fdomain%3Dexample\.com%26subdomain%3Dwww'>", r['body'])
+                     r"&amp;redirect_uri=https%3A%2F%2Fexampleservice\.test%2Fsimple_confirm%3Fdomain%3Dexample\.com%26subdomain%3Dwww&amp;sig=[^']+&amp;key=_dck1'>", r['body'])
     assert 'window.open' not in r['body']
 
 
@@ -76,3 +79,17 @@ def test_confirm_shows_the_error():
 
 def test_confirm_serves_only_the_hosting_website():
     assert wsgi_get(statelesshosting.app, '/simple_confirm', 'example.com', query='domain=example.com')['status'] == 404
+
+
+def test_post_checks_and_signs_template2(dns_records, dns_provider):
+    dns_records({('_domainconnect.example.com', 'TXT'): ['api.provider.test'], ('example.com', 'NS'): ['ns1.provider.test.']})
+    urls = dns_provider(SETTINGS)
+    r = wsgi_post(statelesshosting.app, '/simple_post', HOST, dict(FORM, subdomain='www'))
+    assert urls[1:] == ['https://api.provider.test/v2/domainTemplates/providers/exampleservice.domainconnect.org/services/template2']
+    href = re.search(r"<a href='(https://ux\.provider\.test/[^']*)'>", r['body']).group(1).replace('&amp;', '&')
+    assert href.startswith('https://ux.provider.test/v2/domainTemplates/providers/exampleservice.domainconnect.org/services/template2/apply?')
+    qs, sep, signature = href.split('?', 1)[1].partition('&sig=')
+    assert 'redirect_uri=https%3A%2F%2Fexampleservice.test%2Fsimple_confirm' in qs
+    signature, sep, key = signature.partition('&key=')
+    assert key == '_dck1'
+    assert sigutil.verify_sig(public_key_pem(), urllib.parse.unquote(signature), qs)

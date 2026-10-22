@@ -1,6 +1,6 @@
 # simple-template2 — iteration plan
 
-**Branch:** feat/simple-template2 (from feat/simple-redirect) **Started:** 2026-10-22 **Issue:** none yet (`gh` not logged in)
+**Branch:** feat/simple-template2 (from feat/simple-redirect) **Started:** 2026-10-22 **Issue:** #26
 **Goal:** `/simple_post` checks and applies template 2 with a signature, keeping `redirect_uri` to `/simple_confirm`.
 **Stash:** none
 
@@ -9,7 +9,7 @@
 - [x] Requirement and failing tests
 - [x] `/simple_post`: template 2 check, signed apply URL
 - [x] Gates, docs, restart the test service
-- [~] Issue and PR (based on feat/simple-redirect) once `gh` is logged in
+- [~] Issue and PR (based on feat/simple-redirect)
 - [ ] Promote findings, delete this file
 
 ## Findings

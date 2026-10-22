@@ -23,5 +23,12 @@
 	// Named volumes have no uid/gid mount option and are created root-owned, so
 	// re-own the mount on every start to keep it writable for the remote user.
 	"postStartCommand": "sudo chown -R vscode:vscode /home/node/.claude",
-	"postCreateCommand": "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt"
+	"postCreateCommand": "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt",
+	// devcontainer.json of the example service, next to "remoteUser"
+	"initializeCommand": "docker network inspect dcp-demo >/dev/null 2>&1 || docker network create dcp-demo",
+	"runArgs": [
+		"--network=dcp-demo",
+		"--network-alias=exampleservice.internal",
+		"--add-host=host.docker.internal:host-gateway"
+	]
 }

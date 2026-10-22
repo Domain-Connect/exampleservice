@@ -5,6 +5,9 @@
 
 <script>
 
+const dc_txt = new URLSearchParams(window.location.search).get('dc_txt');
+const dc_proto = new URLSearchParams(window.location.search).get('dc_proto') === 'http' ? 'http' : 'https';
+
 function callbackfunc(url, domain, host, provider_name, data) {
     if (url) {
         url = url + '&RANDOMTEXT=shm:0:' + encodeURIComponent(data) + '&IP=132.148.166.208'
@@ -23,7 +26,7 @@ function publish() {
 	 message = document.getElementById('message').value;
 	 host = document.getElementById('host').value;
 
-	 domain_connect(domain, host, message, 'exampleservice.domainconnect.org', 'template1', callbackfunc);
+	 domain_connect(domain, host, message, 'exampleservice.domainconnect.org', 'template1', callbackfunc, dc_txt, dc_proto);
 }
 </script>
 

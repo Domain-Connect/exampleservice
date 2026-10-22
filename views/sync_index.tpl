@@ -6,12 +6,6 @@ This flow will show detailed steps of the synchronous protocol, and is intended 
 Input your message, and enter the domain and optional sub-domain (host) for your new Website.
 <p/>
 <form method="post" action='/sync_post'>
-% if dc_txt:
-<input name='dc_txt' value='{{dc_txt}}' type='hidden'/>
-% end
-% if dc_proto:
-<input name='dc_proto' value='{{dc_proto}}' type='hidden'/>
-% end
 <table>
 <tr><td>Message</td><td><input name='message' type="text"/></td></tr>
 <tr><td>--</td><td></td></tr>

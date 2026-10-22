@@ -3,18 +3,12 @@
 <h2>Discovering the DNS Provider<h2>
 
 <h4>Step 1</h4>
-% if dc_txt:
-The _domainconnect TXT record at {{domain}} is replaced by the query parameter dc_txt:
-<p/>
-<p style="font-family:courier; word-break:break-all">{{txt}} (dc_txt)</p>
-% else:
 Query for the _domainconnect TXT record at {{domain}}:
 <p/>
 <p style="font-family:courier; word-break:break-all">{{txt}}</p>
-% end
 
 <h4>Step 2</h4>
-Calling URL {{settings_protocol}}://{{txt}}/v2/{{domain}}/settings:
+Calling URL https://{{txt}}/v2/{{domain}}/settings:
 <p/>
 <pre style="font-family:Courier" id="json"></pre>
 <script>document.getElementById("json").innerHTML = JSON.stringify({{!json}}, undefined, 2);</script>

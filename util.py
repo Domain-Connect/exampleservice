@@ -20,6 +20,18 @@ def is_valid_hostname(hostname):
     allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
     return all(allowed.match(x) for x in hostname.split("."))
 
+# A valid _domainconnect record value is a host name with an optional port and path
+def is_valid_dc_txt(dc_txt):
+    host, slash, path = dc_txt.partition('/')
+    host, colon, port = host.partition(':')
+    if colon and not (re.match("^[0-9]{1,5}$", port) and 1 <= int(port) <= 65535):
+        return False
+    return is_valid_hostname(host) and re.match("^[a-zA-Z0-9._~/-]*$", path) is not None
+
+# A valid settings protocol override
+def is_valid_dc_proto(dc_proto):
+    return dc_proto in ('http', 'https')
+
 # A valid message can only contain certain characters
 def is_valid_message(message):
     if len(message) < 1 or len(message) > 255:
@@ -64,21 +76,25 @@ def check_template(url):
         return False
     
     
-# Checks if the DNS Provider supports Domain Connect
-def get_domainconnect_json(domain):
+# Checks if the DNS Provider supports Domain Connect. dc_txt, when given, replaces the _domainconnect record;
+# dc_proto, when given, is the protocol of the settings call
+def get_domainconnect_json(domain, dc_txt=None, dc_proto=None):
 
   try:
 
-    # Get the txt record for domain connect from the domain
-    answers = dns.resolver.resolve('_domainconnect.' + domain, 'TXT')
-    if len(answers) != 1:
-        return None, None, 'No _domainconnect TXT record'
+    if dc_txt:
+        host = dc_txt
+    else:
+        # Get the txt record for domain connect from the domain
+        answers = dns.resolver.resolve('_domainconnect.' + domain, 'TXT')
+        if len(answers) != 1:
+            return None, None, 'No _domainconnect TXT record'
 
-    # Get the value to do the json call
-    host = answers[0].strings[0].decode('utf-8')
+        # Get the value to do the json call
+        host = answers[0].strings[0].decode('utf-8')
 
     # Form the URL to get the json and fetch it
-    url = 'https://' + host + '/v2/' + domain + '/settings'
+    url = (dc_proto or 'https') + '://' + host + '/v2/' + domain + '/settings'
     r = requests.get(url, verify=False)
 
     # Remember that the json might fail if the provider from the DNS TXT record doesn't contain the zone
@@ -88,8 +104,8 @@ def get_domainconnect_json(domain):
     # Get the json
     json_data = r.json()
 
-    # If the provider returned nameservers, verify that they are athoritative
-    if 'nameServers' in json_data:
+    # If the provider returned nameservers, verify that they are athoritative. A faked record has no authoritative zone to check
+    if 'nameServers' in json_data and not dc_txt:
         answers = dns.resolver.resolve(domain, 'NS')
         if len(answers) == 0:
             return None, None, 'No nameservers found'

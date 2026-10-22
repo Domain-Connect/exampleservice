@@ -15,6 +15,12 @@ Hosts is a list of comma delimted host names. An empty value allows the root dom
 The subsequent pages will get permission, and then allow application of template1 or template2 on domain/host tuples via the API. The message for the site is provided there.
 <p/>
 <form method="post" action='/async_post'>
+% if dc_txt:
+<input name='dc_txt' value='{{dc_txt}}' type='hidden'/>
+% end
+% if dc_proto:
+<input name='dc_proto' value='{{dc_proto}}' type='hidden'/>
+% end
 <table>
 <tr><td>Domain Name</td><td><input name='domain' type="text"/></td></tr>
 <tr><td>Host (optional)</td><td><input name='hosts' type="text"/></td></tr>

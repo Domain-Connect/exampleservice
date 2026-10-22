@@ -7,7 +7,7 @@ Your provider is {{providerName}}.
 <p>_domainconnect record: {{dc_txt}} (dc_txt)</p>
 % end
 
-<a href='{{synchronousRedirectUrl1}}'>Click here for one easy setup.</a>
+<a href='{{synchronousSignedRedirectUrl2}}'>Click here for one easy setup.</a>
 <p/>
 {{providerName}} applies the template and sends you back here.
 

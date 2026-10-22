@@ -11,6 +11,7 @@ import urllib.parse
 
 import config
 import util
+import sigutil
 
 @route('/simple_index', method='GET')
 def simple_index():
@@ -38,8 +39,8 @@ def simple_post():
         return template('no_domain_connect.tpl', {'reason' : str(error_message)})
 
     # See if our template is supported
-    check_url1 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + config.provider + '/services/' + config.template1
-    if not util.check_template(check_url1):
+    check_url2 = json_data['urlAPI'] + '/v2/domainTemplates/providers/' + config.provider + '/services/' + config.template2
+    if not util.check_template(check_url2):
         return template('no_domain_connect.tpl', {'reason' : 'Missing template support'})
 
     dns_message_data = util.dns_message_data(message)
@@ -53,14 +54,15 @@ def simple_post():
     redirect_uri = config.protocol + '://' + config.hosting_website + '/simple_confirm?domain=' + urllib.parse.quote(domain, '') + '&subdomain=' + urllib.parse.quote(subdomain or '', '')
     qs = qs + '&redirect_uri=' + urllib.parse.quote(redirect_uri, '')
 
-    # Create the URL to configure template 1
-    synchronousRedirectUrl1 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + config.provider + '/services/' + config.template1 + '/apply?' + qs
+    # Create the URL to configure template 2. Template 2 needs a signature
+    sig = sigutil.generate_sig(config.priv_key, qs)
+    synchronousSignedRedirectUrl2 = json_data['urlSyncUX'] + '/v2/domainTemplates/providers/' + config.provider + '/services/' + config.template2 + '/apply?' + qs + '&sig=' + urllib.parse.quote(sig, '') + '&key=_dck1'
 	
     return template('simple_post.tpl',
 		{
                     'providerName' : json_data['providerName'], 
                     'dc_txt': dc_txt,
-                    'synchronousRedirectUrl1' : synchronousRedirectUrl1
+                    'synchronousSignedRedirectUrl2' : synchronousSignedRedirectUrl2
                 })                    
 
 @route('/simple_confirm', method='GET')

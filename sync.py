@@ -9,6 +9,11 @@ import json
 
 @route('/sync_index', method='GET')
 def sync_index():
+
+    # This only works for the hosting website over the supported protocol
+    if request.headers['Host'] != config.hosting_website or request.urlparts.scheme != config.protocol:
+        return abort(404)
+
     return template('sync_index.tpl')
         
 

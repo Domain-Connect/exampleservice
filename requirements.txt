@@ -1,4 +1,4 @@
 bottle==0.13.4
 cryptography==50.0.2
-dnspython==2.9.0
+dnspython==2.9.2
 requests
